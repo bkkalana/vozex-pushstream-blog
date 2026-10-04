@@ -1,0 +1,2 @@
+export type UtmInput={url:string;utm_source?:string;utm_medium?:string;utm_campaign?:string;utm_term?:string;utm_content?:string};
+export function buildUtmUrl(input:UtmInput){const u=new URL(input.url);if(!["http:","https:"].includes(u.protocol))throw new Error("Only HTTP/HTTPS URLs are supported.");for(const k of ["utm_source","utm_medium","utm_campaign","utm_term","utm_content"] as const){const v=input[k]?.trim();if(v)u.searchParams.set(k,v)}return u.toString()}

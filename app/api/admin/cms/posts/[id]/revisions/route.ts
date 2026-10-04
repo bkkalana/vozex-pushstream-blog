@@ -1,0 +1,2 @@
+import { requirePermission } from "@/lib/auth/session";import { postService } from "@/services/cms/post.service";import { apiError,apiSuccess } from "@/lib/http/api-response";
+export async function GET(_r:Request,{params}:{params:Promise<{id:string}>}){try{const s=await requirePermission("posts.edit");const {id}=await params;return apiSuccess(await postService.revisions(id,s));}catch(e){return apiError(e)}}

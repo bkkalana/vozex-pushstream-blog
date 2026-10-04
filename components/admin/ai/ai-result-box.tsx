@@ -1,0 +1,5 @@
+"use client";
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+export function AiResultBox({text,warning,onAccept,onDiscard,onRegenerate}:{text:string;warning:string;onAccept:(text:string)=>void;onDiscard:()=>void;onRegenerate:()=>void}){const [draft,setDraft]=useState(text);async function copy(){await navigator.clipboard.writeText(draft)}return <div className="space-y-3 rounded-xl border border-blue-200 bg-blue-50/60 p-4"><p className="text-xs font-semibold text-amber-800">{warning}</p><Textarea value={draft} onChange={e=>setDraft(e.target.value)} rows={10} aria-label="Editable AI draft"/><div className="flex flex-wrap gap-2"><Button type="button" onClick={()=>onAccept(draft)}>Accept / Insert</Button><Button type="button" variant="secondary" onClick={copy}>Copy</Button><Button type="button" variant="secondary" onClick={onRegenerate}>Regenerate</Button><Button type="button" variant="secondary" onClick={onDiscard}>Discard</Button></div></div>}

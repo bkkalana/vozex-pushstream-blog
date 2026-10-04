@@ -1,0 +1,2 @@
+import crypto from "node:crypto";
+export function verifyWebhookSignature(args:{secret:string;timestamp:string;body:string;signature:string;maxAgeSeconds?:number}){const age=Math.abs(Date.now()/1000-Number(args.timestamp));if(!Number.isFinite(age)||age>(args.maxAgeSeconds??300))return false;const expected=`sha256=${crypto.createHmac("sha256",args.secret).update(`${args.timestamp}.${args.body}`).digest("hex")}`;const a=Buffer.from(expected),b=Buffer.from(args.signature);return a.length===b.length&&crypto.timingSafeEqual(a,b)}

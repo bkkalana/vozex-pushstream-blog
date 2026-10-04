@@ -1,0 +1,3 @@
+"use client";
+import { useEffect,useState } from "react";
+export function ReadingProgress(){const [p,setP]=useState(0);useEffect(()=>{const run=()=>{const max=document.documentElement.scrollHeight-window.innerHeight;setP(max>0?Math.min(100,Math.max(0,(window.scrollY/max)*100)):0)};run();addEventListener("scroll",run,{passive:true});addEventListener("resize",run);return()=>{removeEventListener("scroll",run);removeEventListener("resize",run)}},[]);return <div className="fixed inset-x-0 top-0 z-[60] h-1 bg-transparent"><div className="h-full bg-[var(--primary-electric)] transition-[width] duration-100" style={{width:`${p}%`}}/></div>}

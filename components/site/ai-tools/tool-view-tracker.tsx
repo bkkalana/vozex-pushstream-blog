@@ -1,0 +1,1 @@
+"use client";import {useEffect} from "react";export function ToolViewTracker({toolId}:{toolId:string}){useEffect(()=>{void fetch("/api/analytics/tool-view",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({toolId}),keepalive:true})},[toolId]);return null}

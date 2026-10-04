@@ -1,0 +1,3 @@
+import { NextRequest } from "next/server";import { apiError,apiSuccess } from "@/lib/http/api-response";import { getRequestId } from "@/lib/http/request-id";import { requirePermission } from "@/lib/auth/session";import { aiToolService } from "@/services/ai-tools/ai-tool.service";
+export async function GET(r:NextRequest){const rid=getRequestId(r.headers);try{await requirePermission("tools.view");return apiSuccess(await aiToolService.categories());}catch(e){return apiError(e,rid)}}
+export async function POST(r:NextRequest){const rid=getRequestId(r.headers);try{await requirePermission("tools.create");return apiSuccess(await aiToolService.createCategory(await r.json()),{status:201});}catch(e){return apiError(e,rid)}}

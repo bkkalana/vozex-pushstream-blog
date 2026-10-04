@@ -1,0 +1,4 @@
+import {describe,expect,it} from "vitest";
+import {buildShareUrl,SUPPORTED_CODE_LANGUAGES} from "@/lib/article/share";
+import {postInputSchema} from "@/lib/validation/cms";
+describe("Phase 28 article UX",()=>{it("encodes share URLs",()=>{const u=buildShareUrl("x","https://pushstream.online/article/a?x=1","A & B");expect(u).toContain("%3F");expect(u).toContain("A%20%26%20B")});it("supports requested languages",()=>{expect(SUPPORTED_CODE_LANGUAGES).toEqual(expect.arrayContaining(["javascript","typescript","json","bash","sql","php","css","html","python"]))});it("validates tutorial metadata",()=>{const value=postInputSchema.parse({title:"Guide",content:{type:"doc",content:[]},authorId:"u1",tagIds:[],tutorialDifficulty:"BEGINNER",tutorialEstimatedMinutes:15});expect(value.tutorialDifficulty).toBe("BEGINNER");expect(value.tutorialEstimatedMinutes).toBe(15)})});

@@ -1,0 +1,41 @@
+CREATE TABLE `PublicPageSection` (
+  `id` VARCHAR(191) NOT NULL,
+  `pageKey` VARCHAR(80) NOT NULL,
+  `sectionKey` VARCHAR(100) NOT NULL,
+  `sectionType` VARCHAR(80) NOT NULL,
+  `enabled` BOOLEAN NOT NULL DEFAULT true,
+  `heading` VARCHAR(255) NULL,
+  `description` TEXT NULL,
+  `sortOrder` INTEGER NOT NULL DEFAULT 0,
+  `dataSource` VARCHAR(80) NULL,
+  `itemCount` INTEGER NULL,
+  `imageId` VARCHAR(191) NULL,
+  `config` JSON NULL,
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` DATETIME(3) NOT NULL,
+  UNIQUE INDEX `PublicPageSection_pageKey_sectionKey_key`(`pageKey`, `sectionKey`),
+  INDEX `PublicPageSection_pageKey_enabled_sortOrder_idx`(`pageKey`, `enabled`, `sortOrder`),
+  INDEX `PublicPageSection_sectionType_idx`(`sectionType`),
+  PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+CREATE TABLE `PublicPageSectionItem` (
+  `id` VARCHAR(191) NOT NULL,
+  `sectionId` VARCHAR(191) NOT NULL,
+  `itemKey` VARCHAR(100) NULL,
+  `title` VARCHAR(255) NULL,
+  `subtitle` VARCHAR(255) NULL,
+  `body` TEXT NULL,
+  `icon` VARCHAR(80) NULL,
+  `imageId` VARCHAR(191) NULL,
+  `url` VARCHAR(1000) NULL,
+  `sortOrder` INTEGER NOT NULL DEFAULT 0,
+  `enabled` BOOLEAN NOT NULL DEFAULT true,
+  `config` JSON NULL,
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+  `updatedAt` DATETIME(3) NOT NULL,
+  INDEX `PublicPageSectionItem_sectionId_enabled_sortOrder_idx`(`sectionId`, `enabled`, `sortOrder`),
+  INDEX `PublicPageSectionItem_itemKey_idx`(`itemKey`),
+  PRIMARY KEY (`id`),
+  CONSTRAINT `PublicPageSectionItem_sectionId_fkey` FOREIGN KEY (`sectionId`) REFERENCES `PublicPageSection`(`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

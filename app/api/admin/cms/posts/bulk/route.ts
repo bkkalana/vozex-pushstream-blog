@@ -1,0 +1,1 @@
+import { requirePermission } from "@/lib/auth/session";import { bulkContentService } from "@/services/cms/bulk-content.service";import { apiError,apiSuccess } from "@/lib/http/api-response";export async function POST(r:Request){try{const s=await requirePermission("posts.edit");return apiSuccess(await bulkContentService.posts(await r.json(),s));}catch(e){return apiError(e)}}

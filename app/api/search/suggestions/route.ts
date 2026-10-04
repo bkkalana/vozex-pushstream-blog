@@ -1,0 +1,2 @@
+import {NextRequest,NextResponse} from "next/server";import {searchSuggestions} from "@/services/site/search.service";import {assertRateLimit} from "@/services/engagement/rate-limit";
+export async function GET(req:NextRequest){try{await assertRateLimit('search.autocomplete',req,60,1);}catch{return NextResponse.json({error:'RATE_LIMITED'},{status:429})}const q=req.nextUrl.searchParams.get("q")??"";if(q.trim().length<2)return NextResponse.json({items:[]});const items=await searchSuggestions(q);return NextResponse.json({items})}

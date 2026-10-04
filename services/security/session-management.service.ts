@@ -1,0 +1,5 @@
+import { prisma } from "@/lib/db/prisma";
+export function describeDevice(ua?:string|null){if(!ua)return "Unknown device";const os=/Windows/i.test(ua)?"Windows":/Android/i.test(ua)?"Android":/iPhone|iPad/i.test(ua)?"iOS/iPadOS":/Mac OS/i.test(ua)?"macOS":/Linux/i.test(ua)?"Linux":"Unknown OS";const browser=/Edg\//.test(ua)?"Edge":/Chrome\//.test(ua)?"Chrome":/Firefox\//.test(ua)?"Firefox":/Safari\//.test(ua)?"Safari":"Browser";return `${browser} · ${os}`;}
+export async function listSessions(userId:string){return prisma.session.findMany({where:{userId,revokedAt:null,expiresAt:{gt:new Date()}},orderBy:{lastSeenAt:"desc"},select:{id:true,createdAt:true,lastSeenAt:true,expiresAt:true,deviceDescription:true,userAgent:true}})}
+export async function revokeSession(userId:string,id:string){return prisma.session.updateMany({where:{id,userId,revokedAt:null},data:{revokedAt:new Date()}})}
+export async function revokeOtherSessions(userId:string,currentId:string){return prisma.session.updateMany({where:{userId,id:{not:currentId},revokedAt:null},data:{revokedAt:new Date()}})}

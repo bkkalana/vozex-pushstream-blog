@@ -1,0 +1,1 @@
+import {requirePermission} from "@/lib/auth/session";import {AdminPageHeader} from "@/components/admin/shared/page-header";import {CmsPageForm} from "@/components/admin/cms/page-form";export default async function NewPage(){await requirePermission("pages.create");return <div className="space-y-6"><AdminPageHeader title="New page"/><CmsPageForm/></div>}

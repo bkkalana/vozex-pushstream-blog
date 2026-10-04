@@ -1,0 +1,3 @@
+import {NextRequest} from "next/server"; import {apiError,apiSuccess} from "@/lib/http/api-response"; import {requirePermission} from "@/lib/auth/session"; import {pageService} from "@/services/cms/taxonomy.service"; import {getRequestId} from "@/lib/http/request-id";
+export async function GET(r:NextRequest){const q=getRequestId(r.headers);try{const s=await requirePermission("pages.view");return apiSuccess(await pageService.list(s));}catch(e){return apiError(e,q)}}
+export async function POST(r:NextRequest){const q=getRequestId(r.headers);try{const s=await requirePermission("pages.create");return apiSuccess(await pageService.create(await r.json(),s),{status:201});}catch(e){return apiError(e,q)}}

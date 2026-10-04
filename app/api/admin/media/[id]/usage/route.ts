@@ -1,0 +1,2 @@
+import {requirePermission} from "@/lib/auth/session";import {apiError,apiSuccess} from "@/lib/http/api-response";import {mediaUsageService} from "@/services/media/media-usage.service";
+export async function GET(_req:Request,{params}:{params:Promise<{id:string}>}){try{await requirePermission("media.view");return apiSuccess(await mediaUsageService.get((await params).id))}catch(e){return apiError(e)}}

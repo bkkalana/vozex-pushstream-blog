@@ -1,0 +1,2 @@
+import { NextRequest } from "next/server"; import { apiSuccess } from "@/lib/http/api-response"; import { postService } from "@/services/cms/post.service";
+export async function POST(request:NextRequest){const supplied=request.headers.get("authorization"); const expected=process.env.CRON_SECRET; if(!expected||supplied!==`Bearer ${expected}`) return Response.json({success:false,error:{code:"UNAUTHORIZED",message:"Invalid cron credential."}},{status:401}); return apiSuccess(await postService.publishScheduled());}

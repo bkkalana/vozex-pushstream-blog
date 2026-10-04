@@ -1,0 +1,4 @@
+import {NextRequest} from "next/server";import {requirePermission} from "@/lib/auth/session";import {apiError,apiSuccess} from "@/lib/http/api-response";import {mediaCollectionService} from "@/services/media/media-collection.service";
+export async function GET(){try{await requirePermission("media.view");return apiSuccess(await mediaCollectionService.list())}catch(e){return apiError(e)}}
+export async function POST(req:NextRequest){try{const s=await requirePermission("media.edit");return apiSuccess(await mediaCollectionService.create(await req.json(),s),{status:201})}catch(e){return apiError(e)}}
+export async function DELETE(req:NextRequest){try{const s=await requirePermission("media.edit");const id=req.nextUrl.searchParams.get("id");if(!id)throw new Error("Collection id is required.");return apiSuccess(await mediaCollectionService.remove(id,s))}catch(e){return apiError(e)}}

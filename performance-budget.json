@@ -1,0 +1,11 @@
+{
+  "publicClientJsKbGzip": 220,
+  "routeClientJsKbGzip": 130,
+  "heroImageKb": 350,
+  "cardImageKb": 140,
+  "targetLcpMs": 2500,
+  "targetInpMs": 200,
+  "targetCls": 0.1,
+  "targetP95ServerMs": 800,
+  "maxPrimaryPageQueries": 12
+}

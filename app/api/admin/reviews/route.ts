@@ -1,0 +1,3 @@
+import {NextRequest} from "next/server";import {apiError,apiSuccess,getRequestId} from "@/lib/api/response";import {requirePermission} from "@/lib/auth/session";import {reviewService} from "@/services/reviews/review.service";
+export async function GET(r:NextRequest){const id=getRequestId(r.headers);try{await requirePermission("reviews.view");const p=r.nextUrl.searchParams;return apiSuccess(await reviewService.list({q:p.get("q")||"",status:p.get("status")||"",page:Number(p.get("page")||1)}));}catch(e){return apiError(e,id)}}
+export async function POST(r:NextRequest){const id=getRequestId(r.headers);try{const s=await requirePermission("reviews.create");return apiSuccess(await reviewService.create(await r.json(),s),{status:201});}catch(e){return apiError(e,id)}}

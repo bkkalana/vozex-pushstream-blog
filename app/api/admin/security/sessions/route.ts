@@ -1,0 +1,3 @@
+import {requireSession} from "@/lib/auth/session";import {apiError,apiSuccess} from "@/lib/http/api-response";import {listSessions,revokeSession} from "@/services/security/session-management.service";
+export async function GET(){try{const s=await requireSession();return apiSuccess({currentSessionId:s.id,sessions:await listSessions(s.user.id)});}catch(e){return apiError(e)}}
+export async function DELETE(req:Request){try{const s=await requireSession();const {id}=await req.json();if(id===s.id)throw new Error("Use logout to end the current session.");await revokeSession(s.user.id,String(id));return apiSuccess({revoked:true});}catch(e){return apiError(e)}}

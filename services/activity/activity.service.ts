@@ -1,0 +1,4 @@
+import{prisma}from"@/lib/db/prisma";
+const SECRET=/(password|token|secret|authorization|cookie|api[_-]?key)/i;
+function scrub(v:unknown,d=0):unknown{if(d>4)return"[truncated]";if(Array.isArray(v))return v.slice(0,30).map(x=>scrub(x,d+1));if(!v||typeof v!=="object")return v;return Object.fromEntries(Object.entries(v as Record<string,unknown>).map(([k,x])=>[k,SECRET.test(k)?"[redacted]":scrub(x,d+1)]))}
+export const activityService={async record(input:{userId?:string|null;action:string;entityType?:string|null;entityId?:string|null;summary:string;metadata?:Record<string,unknown>}){return prisma.activityLog.create({data:{userId:input.userId??null,action:input.action.slice(0,120),entityType:input.entityType?.slice(0,120)||null,entityId:input.entityId?.slice(0,191)||null,summary:input.summary.slice(0,500),metadata:input.metadata?scrub(input.metadata) as object:undefined}}).catch(()=>null)}};

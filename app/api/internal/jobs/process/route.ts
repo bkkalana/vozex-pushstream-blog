@@ -1,0 +1,2 @@
+import {NextRequest,NextResponse} from "next/server";import {env} from "@/lib/env";import {databaseJobQueue,enqueueRecurringJobs} from "@/services/jobs/job-queue.service";
+export async function POST(req:NextRequest){if(req.headers.get("authorization")!==`Bearer ${env.CRON_SECRET}`)return NextResponse.json({success:false,error:"Unauthorized"},{status:401});await enqueueRecurringJobs();const workerId=`http-${process.pid}`;const result=await databaseJobQueue.processBatch({workerId,limit:20});return NextResponse.json({success:true,...result});}

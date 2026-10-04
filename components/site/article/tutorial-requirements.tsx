@@ -1,0 +1,6 @@
+export function TutorialRequirements({difficulty,minutes,requirements,tools,prerequisites}:{difficulty?:string|null;minutes?:number|null;requirements?:string|null;tools?:string|null;prerequisites?:string|null}){
+ if(!difficulty&&!minutes&&!requirements&&!tools&&!prerequisites)return null;
+ const items=[requirements&&["Requirements",requirements],tools&&["Tools needed",tools],prerequisites&&["Prerequisites",prerequisites]].filter(Boolean) as [string,string][];
+ return <section className="mb-7 rounded-2xl border border-[var(--border)] bg-[var(--background-soft)] p-5" aria-labelledby="tutorial-requirements-title"><div className="flex flex-wrap items-center gap-2"><h2 id="tutorial-requirements-title" className="mr-2 text-lg font-extrabold">Before you start</h2>{difficulty&&<span className="rounded-full bg-white px-3 py-1 text-xs font-bold">{title(difficulty)}</span>}{minutes&&<span className="rounded-full bg-white px-3 py-1 text-xs font-bold">About {minutes} min</span>}</div>{items.length>0&&<dl className="mt-4 grid gap-4 sm:grid-cols-2">{items.map(([label,value])=><div key={label}><dt className="text-sm font-bold">{label}</dt><dd className="mt-1 whitespace-pre-line text-sm text-[var(--text-secondary)]">{value}</dd></div>)}</dl>}</section>
+}
+function title(v:string){return v.charAt(0)+v.slice(1).toLowerCase()}

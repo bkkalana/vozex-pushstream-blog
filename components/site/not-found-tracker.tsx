@@ -1,0 +1,1 @@
+"use client";import {useEffect} from "react";import {usePathname} from "next/navigation";export function NotFoundTracker(){const path=usePathname();useEffect(()=>{if(path)fetch("/api/analytics/not-found",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({path}),keepalive:true}).catch(()=>undefined)},[path]);return null}

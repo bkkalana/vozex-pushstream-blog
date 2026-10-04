@@ -1,0 +1,2 @@
+export function buildShareUrl(network:"facebook"|"linkedin"|"x"|"whatsapp",url:string,title:string){const u=encodeURIComponent(url),t=encodeURIComponent(title);if(network==="facebook")return `https://www.facebook.com/sharer/sharer.php?u=${u}`;if(network==="linkedin")return `https://www.linkedin.com/sharing/share-offsite/?url=${u}`;if(network==="x")return `https://twitter.com/intent/tweet?url=${u}&text=${t}`;return `https://wa.me/?text=${t}%20${u}`}
+export const SUPPORTED_CODE_LANGUAGES=["javascript","typescript","json","bash","sql","php","css","html","python"] as const;

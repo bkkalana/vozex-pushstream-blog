@@ -1,0 +1,2 @@
+import { prisma } from "@/lib/db/prisma";
+export async function recordSecurityEvent(input:{userId?:string;type:string;severity?:"INFO"|"WARNING"|"HIGH"|"CRITICAL";summary:string;metadata?:Record<string,unknown>;ipHash?:string}){return prisma.securityEvent.create({data:{userId:input.userId,type:input.type,severity:input.severity??"INFO",summary:input.summary,metadata:input.metadata as any,ipHash:input.ipHash}})}

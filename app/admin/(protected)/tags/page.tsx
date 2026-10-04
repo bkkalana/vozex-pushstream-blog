@@ -1,0 +1,2 @@
+import { requirePermission } from "@/lib/auth/session";import { tagService } from "@/services/cms/taxonomy.service";import { AdminPageHeader } from "@/components/admin/shared/page-header";import { SimpleManager } from "@/components/admin/cms/simple-manager";
+export default async function TagsPage(){await requirePermission("tags.view");const rows=await tagService.list();return <div className="space-y-6"><AdminPageHeader title="Tags" description="Manage reusable post tags and their SEO metadata."/><SimpleManager kind="tags" rows={rows}/></div>}

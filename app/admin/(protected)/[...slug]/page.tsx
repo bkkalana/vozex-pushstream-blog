@@ -1,0 +1,4 @@
+import { AdminPageHeader } from "@/components/admin/shared/page-header";
+import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+export default async function AdminPlaceholder({params}:{params:Promise<{slug?:string[]}>}) { const {slug=[]}=await params; const title=slug.map((part)=>part.replaceAll("-"," ").replace(/\b\w/g,(c)=>c.toUpperCase())).join(" / ")||"Dashboard"; return <div><AdminPageHeader eyebrow="Admin" title={title} description="The navigation and shared Phase 2 UX are active. Domain-specific functionality for this screen is implemented in its scheduled phase."/><Card className="p-5"><EmptyState title={`${title} module`} description="This route is intentionally connected now so navigation never dead-ends; its real database-backed feature set is added in the matching implementation phase."/></Card></div>; }

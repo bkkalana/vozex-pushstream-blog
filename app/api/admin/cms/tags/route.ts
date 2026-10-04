@@ -1,0 +1,3 @@
+import {NextRequest} from "next/server"; import {apiError,apiSuccess} from "@/lib/http/api-response"; import {requirePermission} from "@/lib/auth/session"; import {tagService} from "@/services/cms/taxonomy.service"; import {getRequestId} from "@/lib/http/request-id";
+export async function GET(r:NextRequest){const q=getRequestId(r.headers);try{await requirePermission("tags.view");return apiSuccess(await tagService.list());}catch(e){return apiError(e,q)}}
+export async function POST(r:NextRequest){const q=getRequestId(r.headers);try{await requirePermission("tags.create");return apiSuccess(await tagService.create(await r.json()),{status:201});}catch(e){return apiError(e,q)}}

@@ -1,0 +1,4 @@
+import { CACHE_TAGS,revalidatePublicContent } from "@/lib/cache/invalidation";
+import {NextRequest} from "next/server"; import {apiError,apiSuccess} from "@/lib/http/api-response"; import {requirePermission} from "@/lib/auth/session"; import {categoryService} from "@/services/cms/taxonomy.service"; import {getRequestId} from "@/lib/http/request-id";
+export async function GET(r:NextRequest){const q=getRequestId(r.headers);try{await requirePermission("categories.view");return apiSuccess(await categoryService.list());}catch(e){return apiError(e,q)}}
+export async function POST(r:NextRequest){const q=getRequestId(r.headers);try{const s=await requirePermission("categories.create");const row=await categoryService.create(await r.json(),s);revalidatePublicContent([CACHE_TAGS.categories,CACHE_TAGS.homepage],["/"]);return apiSuccess(row,{status:201});}catch(e){return apiError(e,q)}}

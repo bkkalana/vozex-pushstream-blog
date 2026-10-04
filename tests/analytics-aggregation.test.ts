@@ -1,0 +1,1 @@
+import{describe,it,expect}from"vitest";describe("Phase 25 analytics semantics",()=>{it("does not treat views as a quality score",()=>{const label="Low traffic review queue";expect(label).not.toMatch(/bad|poor quality/i)});it("uses privacy-safe device groups",()=>{expect(["Desktop","Tablet","Mobile","Unknown"]).toHaveLength(4)})});

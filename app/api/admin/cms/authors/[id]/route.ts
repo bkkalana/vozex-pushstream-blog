@@ -1,0 +1,2 @@
+import {NextRequest} from "next/server"; import {apiError,apiSuccess} from "@/lib/http/api-response"; import {requirePermission} from "@/lib/auth/session"; import {authorService} from "@/services/cms/taxonomy.service"; import {getRequestId} from "@/lib/http/request-id";
+export async function PUT(r:NextRequest){const q=getRequestId(r.headers);try{await requirePermission("users.edit");return apiSuccess(await authorService.upsert(await r.json()));}catch(e){return apiError(e,q)}}

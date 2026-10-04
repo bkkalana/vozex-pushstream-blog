@@ -1,0 +1,3 @@
+import { z } from "zod";
+export const contentBlockInputSchema=z.object({name:z.string().trim().min(1).max(160),slug:z.string().trim().max(180).optional(),type:z.enum(["NEWSLETTER_CTA","AFFILIATE_DISCLOSURE","AUTHOR_NOTE","PRODUCT_CTA","HOSTING_RECOMMENDATION","IMPORTANT_WARNING","STANDARD_DISCLAIMER","AD_PLACEHOLDER","CUSTOM"]).default("CUSTOM"),content:z.unknown(),status:z.enum(["ACTIVE","ARCHIVED"]).default("ACTIVE")});
+export const bulkPostActionSchema=z.object({ids:z.array(z.string().min(1)).min(1).max(100),action:z.enum(["publish","unpublish","archive","trash","restore","delete_permanently","set_featured","remove_featured","change_author","change_category","add_tag","remove_tag"]),value:z.string().optional().nullable()});

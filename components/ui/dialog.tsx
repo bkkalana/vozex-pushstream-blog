@@ -1,0 +1,9 @@
+"use client";
+import { useEffect, useId, useRef, type ReactNode } from "react";
+import { getFocusable, trapTab } from "@/lib/a11y/focus";
+export function Dialog({open,title,description,children,onClose}:{open:boolean;title:string;description?:string;children:ReactNode;onClose:()=>void}) {
+  const panel=useRef<HTMLElement>(null); const titleId=useId(); const descriptionId=useId();
+  useEffect(()=>{if(!open)return;const previous=document.activeElement as HTMLElement|null;const root=panel.current;const oldOverflow=document.body.style.overflow;document.body.style.overflow="hidden";const onKey=(event:KeyboardEvent)=>{if(!root)return;if(event.key==="Escape"){event.preventDefault();onClose();return}trapTab(event,root)};document.addEventListener("keydown",onKey);queueMicrotask(()=>{const first=root?getFocusable(root)[0]:null;(first??root)?.focus()});return()=>{document.removeEventListener("keydown",onKey);document.body.style.overflow=oldOverflow;previous?.focus();}},[open,onClose]);
+  if(!open)return null;
+  return <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/45 p-3 sm:p-4" role="presentation" onMouseDown={(event)=>{if(event.target===event.currentTarget)onClose()}}><section ref={panel} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={titleId} aria-describedby={description?descriptionId:undefined} className="max-h-[calc(100dvh-1.5rem)] w-full max-w-lg overflow-y-auto rounded-[var(--radius-lg)] bg-white p-5 shadow-2xl sm:max-h-[90vh] sm:p-6"><div className="flex items-start justify-between gap-4"><div><h2 id={titleId} className="text-xl font-semibold">{title}</h2>{description&&<p id={descriptionId} className="mt-1 text-sm text-[var(--text-muted)]">{description}</p>}</div><button type="button" aria-label="Close dialog" onClick={onClose} className="touch-target grid shrink-0 place-items-center rounded-lg hover:bg-[var(--background-soft)]">×</button></div><div className="mt-5">{children}</div></section></div>;
+}
