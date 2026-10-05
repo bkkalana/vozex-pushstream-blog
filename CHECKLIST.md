@@ -65,3 +65,19 @@
 - [x] Hero enable/disable respected
 - [x] Home, Latest, WordPress, Development, How-To, Online Business, AI Tools, Reviews, Comparisons, About, Contact and Resources wired
 - [x] Accessibility, integration, visual-parity and SEO source audits pass
+
+## Lighthouse / PageSpeed optimization pass — 2026-10-05
+- [x] Replace raw public logo rendering with `next/image`
+- [x] Prevent desktop/mobile hero images from competing as two high-priority requests
+- [x] Use a responsive `<picture>` backed by Next image optimization
+- [x] Mark the single selected hero/LCP request as eager/high priority
+- [x] Stop preloading optional Manrope and Plus Jakarta Sans font families
+- [x] Increase optimized image cache TTL to seven days
+- [x] Add browser cache headers for branding, uploads, and favicon assets
+- [x] Enable `content-visibility` containment for below-the-fold homepage sections
+- [x] Restore public route revalidation instead of forcing every route dynamic
+- [x] Performance source audit passes
+- [x] Accessibility source audit passes
+- [x] SEO regression audit passes
+- [x] Integration audit passes
+- [x] Visual parity audit passes

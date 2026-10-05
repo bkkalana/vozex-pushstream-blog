@@ -112,3 +112,8 @@ After deployment, verify:
 curl -I https://pushstream.online/sitemap.xml
 curl https://pushstream.online/robots.txt
 ```
+
+
+## Google Analytics
+
+GA4 is integrated through the Site Settings value `analytics.googleAnalyticsId`. The default measurement ID is `G-CT25S0HK0Y`; it can be changed from Admin → Site Settings without editing source code. The tag loads with Next.js `afterInteractive` to reduce render-blocking impact.

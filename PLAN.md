@@ -34,3 +34,6 @@
 - Support Google Search Console verification from the admin SEO screen.
 - Provide a default Open Graph image and RSS feed discovery.
 - After deployment, submit the sitemap and validate representative URLs in Search Console.
+
+## Lighthouse / PageSpeed optimization pass — 2026-10-05
+This release reduces LCP/network contention, oversized image transfer, unnecessary font preloads, repeat static-asset transfer, below-the-fold rendering work, and unnecessary dynamic rendering on public pages while preserving admin/auth dynamic behavior.

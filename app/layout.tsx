@@ -1,16 +1,17 @@
 import type { Metadata } from "next";
 import { Inter, Manrope, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
+import Script from "next/script";
 import { env } from "@/lib/env";
 import { getSeoSiteConfig } from "@/lib/seo/site";
 import { appearanceVariablesFromSettings, getSettingsMap } from "@/services/system/settings.service";
 import "./globals.css";
 
-export const dynamic = "force-dynamic";
+export const revalidate = 300;
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
-const manrope = Manrope({ subsets:["latin"], variable:"--font-manrope", display:"swap" });
-const jakarta = Plus_Jakarta_Sans({ subsets:["latin"], variable:"--font-jakarta", display:"swap" });
+const manrope = Manrope({ subsets:["latin"], variable:"--font-manrope", display:"swap", preload:false });
+const jakarta = Plus_Jakarta_Sans({ subsets:["latin"], variable:"--font-jakarta", display:"swap", preload:false });
 
 export async function generateMetadata():Promise<Metadata>{
   const seo=await getSeoSiteConfig();
@@ -29,9 +30,14 @@ export async function generateMetadata():Promise<Metadata>{
 }
 
 export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const settings = await getSettingsMap("appearance").catch(() => new Map<string,unknown>());
+  const [settings, integrations] = await Promise.all([
+    getSettingsMap("appearance").catch(() => new Map<string,unknown>()),
+    getSettingsMap("integrations").catch(() => new Map<string,unknown>()),
+  ]);
   const appearance = appearanceVariablesFromSettings(settings);
   const font = String(settings.get("appearance.fontFamily") ?? "Inter");
   const fontVar = font === "Manrope" ? "var(--font-manrope)" : font === "Plus Jakarta Sans" ? "var(--font-jakarta)" : "var(--font-inter)";
-  return <html lang="en"><body className={`${inter.variable} ${manrope.variable} ${jakarta.variable}`} style={{...appearance,"--site-font":fontVar} as React.CSSProperties}>{children}<Toaster richColors closeButton position="top-right" /></body></html>;
+  const googleAnalyticsId = String(integrations.get("analytics.googleAnalyticsId") ?? "G-CT25S0HK0Y").trim();
+  const validGoogleAnalyticsId = /^G-[A-Z0-9]+$/i.test(googleAnalyticsId) ? googleAnalyticsId : "";
+  return <html lang="en"><body className={`${inter.variable} ${manrope.variable} ${jakarta.variable}`} style={{...appearance,"--site-font":fontVar} as React.CSSProperties}>{children}<Toaster richColors closeButton position="top-right" />{validGoogleAnalyticsId ? <><Script src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(validGoogleAnalyticsId)}`} strategy="afterInteractive"/><Script id="google-analytics" strategy="afterInteractive">{`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${validGoogleAnalyticsId}');`}</Script></> : null}</body></html>;
 }

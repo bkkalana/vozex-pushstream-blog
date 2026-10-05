@@ -1141,3 +1141,11 @@ body { overflow-x: clip; }
 .ps-review-hub-hero-media,.ps-comparison-hub-hero-media{position:relative;min-height:320px;overflow:hidden;border:1px solid var(--ps-border);border-radius:18px;background:#eef6ff;box-shadow:var(--ps-shadow-card)}
 @media(max-width:860px){.ps-review-hub-hero-media,.ps-comparison-hub-hero-media{min-height:280px}}
 .ps-archive-hero-media{position:relative;min-height:280px;overflow:hidden;border-radius:18px;background:#eef6ff;box-shadow:var(--ps-shadow-card)}
+
+/* Performance: keep below-the-fold homepage sections out of the initial render cost. */
+@supports (content-visibility: auto) {
+  .ps-home-v2 .ps-section {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 760px;
+  }
+}

@@ -1,9 +1,16 @@
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import type { ReactNode } from "react";
 
 type Media = { path: string; altText?: string | null } | null | undefined;
 type Position = "center" | "top" | "bottom" | "left" | "right";
 
+/**
+ * Renders one responsive image request for the hero.
+ *
+ * Using two separately prioritized image elements for desktop/mobile can emit two high-priority
+ * candidates and make the browser compete for bandwidth during LCP. A <picture>
+ * lets the browser select the correct optimized source before downloading it.
+ */
 export function ResponsiveHeroImage({
   desktop,
   mobile,
@@ -25,26 +32,39 @@ export function ResponsiveHeroImage({
 }) {
   const primary = desktop || mobile;
   if (!primary) return <>{fallback ?? null}</>;
+
   const safeOverlay = Math.min(80, Math.max(0, overlay));
+  const accessibleAlt = alt || primary.altText || "";
+  const desktopImage = getImageProps({
+    src: primary.path,
+    alt: accessibleAlt,
+    fill: true,
+    sizes,
+    quality: 82,
+  }).props;
+  const mobileImage = mobile
+    ? getImageProps({
+        src: mobile.path,
+        alt: alt || mobile.altText || accessibleAlt,
+        fill: true,
+        sizes: "100vw",
+        quality: 80,
+      }).props
+    : null;
+
   return <>
-    <Image
-      src={primary.path}
-      alt={alt || primary.altText || ""}
-      fill
-      priority
-      sizes={sizes}
-      className={`object-cover ${mobile ? "ps-hero-media-desktop ps-hero-media-has-mobile" : "ps-hero-media-desktop"}`}
-      style={{ objectPosition: desktopPosition }}
-    />
-    {mobile ? <Image
-      src={mobile.path}
-      alt={alt || mobile.altText || ""}
-      fill
-      priority
-      sizes="100vw"
-      className="object-cover ps-hero-media-mobile"
-      style={{ objectPosition: mobilePosition }}
-    /> : null}
+    <picture>
+      {mobileImage ? <source media="(max-width: 767px)" srcSet={mobileImage.srcSet} sizes="100vw" /> : null}
+      <img
+        {...desktopImage}
+        alt={accessibleAlt}
+        fetchPriority="high"
+        loading="eager"
+        className="object-cover ps-hero-media-picture"
+        style={{ ...desktopImage.style, objectPosition: desktopPosition }}
+      />
+    </picture>
+    {mobileImage ? <style>{`@media (max-width:767px){.ps-hero-media-picture{object-position:${mobileImagePosition}!important}}`}</style> : null}
     {safeOverlay > 0 ? <span className="ps-hero-media-overlay" style={{ backgroundColor: `rgba(0,0,0,${safeOverlay / 100})` }} aria-hidden="true" /> : null}
   </>;
 }

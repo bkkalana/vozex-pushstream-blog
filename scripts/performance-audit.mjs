@@ -9,7 +9,7 @@ const rawImgFiles = new Set();
 const allowedRawImgFiles = new Set([
   "components/site/article-json-renderer.tsx",
   "components/site/navigation/site-header-client.tsx",
-  "components/site/v2/layout/brand.tsx",
+  "components/site/v2/primitives/responsive-hero-image.tsx",
 ]);
 const fillImagesMissingSizes = new Set();
 const priorityImageFiles = new Set();

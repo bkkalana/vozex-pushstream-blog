@@ -123,7 +123,7 @@ async function seedPhase12Defaults() {
     ["appearance.backgroundSoft","appearance","#F5F9FF"],["appearance.backgroundBlue","appearance","#EFF6FF"],
     ["appearance.border","appearance","#E4ECF5"],["appearance.textSecondary","appearance","#526174"],["appearance.textMuted","appearance","#6B7A90"],
     ["social.facebook","social",""],["social.twitter","social",""],["social.linkedin","social",""],["social.youtube","social",""],["social.instagram","social",""],
-    ["analytics.googleAnalyticsId","integrations",""],["analytics.googleTagManagerId","integrations",""],
+    ["analytics.googleAnalyticsId","integrations","G-CT25S0HK0Y"],["analytics.googleTagManagerId","integrations",""],
     ["comments.enabled","integrations",true],["comments.requireModeration","integrations",true],["newsletter.confirmationRequired","integrations",true],
     ["performance.readingWordsPerMinute","integrations",225],
   ] as const;
