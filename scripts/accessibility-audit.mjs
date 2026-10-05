@@ -1,14 +1,53 @@
 import fs from "node:fs";
 import path from "node:path";
-const roots=["app","components"];
-const files=[];
-for(const root of roots){if(!fs.existsSync(root))continue;const walk=(d)=>{for(const e of fs.readdirSync(d,{withFileTypes:true})){const p=path.join(d,e.name);if(e.isDirectory())walk(p);else if(/\.(tsx|jsx)$/.test(e.name))files.push(p)}};walk(root)}
-let warnings=[];
-for(const file of files){const s=fs.readFileSync(file,"utf8");
-  const rawImgs=(s.match(/<img\b/g)||[]).length; const altAttrs=(s.match(/\balt=/g)||[]).length; if(rawImgs>altAttrs)warnings.push(`${file}: raw img may be missing alt text`);
-  if(/group-hover:visible/.test(s)&&!/group-focus-within:visible/.test(s))warnings.push(`${file}: hover-only disclosure may not be keyboard accessible`);
-  if(/outline-none/.test(s)&&!/focus-visible:/.test(s))warnings.push(`${file}: outline-none without local focus-visible replacement`);
-  const iconButtons=[...s.matchAll(/<button\b[^>]*>/g)].filter(m=>!/aria-label=|aria-labelledby=/.test(m[0])); if(iconButtons.length) warnings.push(`${file}: review ${iconButtons.length} button(s) for accessible names`);
+
+const roots = ["app", "components"];
+const files = [];
+for (const root of roots) {
+  if (!fs.existsSync(root)) continue;
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const file = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(file);
+      else if (/\.(tsx|jsx)$/.test(entry.name)) files.push(file);
+    }
+  };
+  walk(root);
 }
+
+const warnings = [];
+const stripJsx = (body) => body
+  .replace(/<[^>]+>/g, " ")
+  .replace(/\{\s*(?:[^{}]|\{[^{}]*\})+\s*\}/g, " DYNAMIC_CONTENT ")
+  .replace(/\s+/g, " ")
+  .trim();
+
+for (const file of files) {
+  const source = fs.readFileSync(file, "utf8");
+  const rawImgs = (source.match(/<img\b/g) || []).length;
+  const altAttrs = (source.match(/\balt=/g) || []).length;
+  if (rawImgs > altAttrs) warnings.push(`${file}: raw img may be missing alt text`);
+  if (/group-hover:visible/.test(source) && !/group-focus-within:visible/.test(source)) {
+    warnings.push(`${file}: hover-only disclosure may not be keyboard accessible`);
+  }
+  if (/outline-none/.test(source) && !/focus-visible:/.test(source)) {
+    warnings.push(`${file}: outline-none without local focus-visible replacement`);
+  }
+
+  // Only warn when a complete button has neither ARIA naming nor visible/dynamic content.
+  for (const match of source.matchAll(/<button\b([^>]*)>([\s\S]*?)<\/button>/g)) {
+    const attrs = match[1];
+    const body = match[2];
+    if (/aria-label\s*=|aria-labelledby\s*=|title\s*=/.test(attrs)) continue;
+    if (stripJsx(body)) continue;
+    warnings.push(`${file}: button without an accessible name`);
+  }
+}
+
 console.log(`Accessibility source audit: ${files.length} TSX/JSX files scanned`);
-if(warnings.length){console.log(`Warnings: ${warnings.length}`);for(const w of warnings.slice(0,80))console.log(`- ${w}`);process.exitCode=0}else console.log("No heuristic warnings found.");
+if (warnings.length) {
+  console.error(`Warnings: ${warnings.length}`);
+  for (const warning of warnings.slice(0, 80)) console.error(`- ${warning}`);
+  process.exit(1);
+}
+console.log("PASS: no heuristic accessibility warnings found.");

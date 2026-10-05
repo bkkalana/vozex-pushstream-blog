@@ -39,7 +39,8 @@
     "postinstall": "prisma generate",
     "prebuild": "prisma generate",
     "pretypecheck": "prisma generate",
-    "audit:prisma-client": "node scripts/prisma-client-freshness-audit.mjs"
+    "audit:prisma-client": "node scripts/prisma-client-freshness-audit.mjs",
+    "package:source": "bash scripts/package-source.sh"
   },
   "dependencies": {
     "@prisma/client": "^7.0.0",

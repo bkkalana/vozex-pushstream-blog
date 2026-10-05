@@ -22,7 +22,9 @@ export async function generateMetadata():Promise<Metadata>{
     robots:{index:seo.robotsIndex,follow:seo.robotsFollow},
     openGraph:{type:"website",siteName:seo.siteName,title:seo.defaultTitle,description:seo.defaultDescription,url:env.SITE_URL,...(seo.defaultOgImage?{images:[seo.defaultOgImage]}:{})},
     twitter:{card:seo.twitterCard,title:seo.defaultTitle,description:seo.defaultDescription,...(seo.defaultOgImage?{images:[seo.defaultOgImage]}:{})},
-    ...(seo.favicon?{icons:{icon:seo.favicon}}:{}),
+    ...(seo.favicon?{icons:{icon:[{url:"/branding/favicon-512.png",type:"image/png",sizes:"512x512"},{url:seo.favicon,type:"image/x-icon"}],apple:"/branding/apple-touch-icon.png"}}:{}),
+    ...((seo.googleSiteVerification || seo.bingSiteVerification)?{verification:{...(seo.googleSiteVerification?{google:seo.googleSiteVerification}:{}),...(seo.bingSiteVerification?{other:{"msvalidate.01":seo.bingSiteVerification}}:{})}}:{}),
+    category:"technology",
   };
 }
 

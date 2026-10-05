@@ -4,6 +4,7 @@ import { requirePermission } from "@/lib/auth/session";
 import { seoAdminService } from "@/services/seo/seo.service";
 import { redirectService } from "@/services/seo/redirect.service";
 import { auditService } from "@/services/audit/audit.service";
+import { submitIndexNowUrls } from "@/lib/seo/indexnow";
 
 export async function saveSeoSettings(fd:FormData){
   const s=await requirePermission("seo.edit");
@@ -13,11 +14,23 @@ export async function saveSeoSettings(fd:FormData){
     "seo.metaDescription":value("metaDescription")||"Smarter Tech. Better Solutions.",
     "seo.ogImage":value("ogImage")||"",
     "seo.twitterCard":value("twitterCard")==="summary"?"summary":"summary_large_image",
+    "seo.siteAlternateName":value("siteAlternateName")||"",
+    "seo.googleSiteVerification":value("googleSiteVerification")||"",
+    "seo.bingSiteVerification":value("bingSiteVerification")||"",
+    "seo.indexNowKey":value("indexNowKey")||"",
     "seo.robotsIndex":fd.get("robotsIndex")==="on",
     "seo.robotsFollow":fd.get("robotsFollow")==="on",
   });
   await auditService.record({userId:s.user.id,action:"seo.settings.update",entityType:"SiteSetting",entityId:"seo"});
-  revalidatePath("/","layout"); revalidatePath("/robots.txt"); revalidatePath("/sitemap.xml");
+  revalidatePath("/","layout"); revalidatePath("/robots.txt"); revalidatePath("/sitemap.xml"); revalidatePath("/manifest.webmanifest"); revalidatePath("/indexnow-key.txt");
+}
+
+export async function submitIndexNow(fd:FormData){
+  const s=await requirePermission("seo.edit");
+  const raw=String(fd.get("indexNowUrl")||"/").trim()||"/";
+  const result=await submitIndexNowUrls([raw]);
+  await auditService.record({userId:s.user.id,action:"seo.indexnow.submit",entityType:"SiteSetting",entityId:"indexnow",metadata:{url:raw,submitted:result.submitted,skipped:result.skipped}});
+  revalidatePath("/admin/seo");
 }
 
 export async function saveRedirect(fd:FormData){

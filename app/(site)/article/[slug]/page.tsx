@@ -99,6 +99,8 @@ export default async function ArticlePage({ params }: { params: Promise<{ slug: 
     datePublished: post.publishedAt,
     dateModified: post.updatedAt,
     author: post.author.name,
+    authorUrl: post.author.authorProfile ? `/author/${post.author.authorProfile.slug}` : undefined,
+    publisherLogo: "/branding/pushstream-logo.png",
     schemaType: post.schemaType,
   });
   const crumbLd = breadcrumbSchema([

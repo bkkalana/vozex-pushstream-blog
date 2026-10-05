@@ -54,8 +54,12 @@ async function seedSettings() {
     ["seo.defaultTitle", "seo", "PushStream — Smarter Tech. Better Solutions."],
     ["seo.defaultDescription", "seo", "Practical technology guides, AI tools, development tutorials, reviews and online business resources."],
     ["seo.metaDescription", "seo", "Practical technology guides, AI tools, development tutorials, reviews and online business resources."],
-    ["seo.ogImage", "seo", ""],
+    ["seo.ogImage", "seo", "/branding/default-og.png"],
     ["seo.twitterCard", "seo", "summary_large_image"],
+    ["seo.siteAlternateName", "seo", "Push Stream"],
+    ["seo.googleSiteVerification", "seo", ""],
+    ["seo.bingSiteVerification", "seo", ""],
+    ["seo.indexNowKey", "seo", ""],
     ["seo.robotsIndex", "seo", true],
     ["seo.robotsFollow", "seo", true],
     ["content.readingWordsPerMinute", "content", 225],
@@ -113,7 +117,7 @@ async function seedPhase11Defaults() {
 async function seedPhase12Defaults() {
   const settings = [
     ["general.adminEmail","general",env.SUPER_ADMIN_EMAIL ?? ""],
-    ["general.logoUrl","general",""],["general.faviconUrl","general",""],["general.defaultAuthorId","general",""],
+    ["general.logoUrl","general","/branding/pushstream-logo.png"],["general.faviconUrl","general","/branding/favicon.ico"],["general.defaultAuthorId","general",""],
     ["appearance.primary","appearance","#2563EB"],["appearance.primaryHover","appearance","#1D4ED8"],["appearance.secondary","appearance","#0B1F3A"],["appearance.accent","appearance","#287BFF"],["appearance.fontFamily","appearance","Inter"],
     ["appearance.foreground","appearance","#0B1F3A"],["appearance.background","appearance","#FFFFFF"],
     ["appearance.backgroundSoft","appearance","#F5F9FF"],["appearance.backgroundBlue","appearance","#EFF6FF"],

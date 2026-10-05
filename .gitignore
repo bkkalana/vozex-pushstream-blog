@@ -11,3 +11,6 @@ backups/
 logs/
 public/uploads/*
 !public/uploads/.gitkeep
+generated/
+*.tsbuildinfo
+*.zip
