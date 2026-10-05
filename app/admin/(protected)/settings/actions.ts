@@ -13,6 +13,9 @@ import { upsertSettings } from "@/services/system/settings.service";
 const text = (formData: FormData, key: string, max = 500) =>
   String(formData.get(key) ?? "").trim().slice(0, max);
 
+const isGoogleAnalyticsId = (value: string) => /^(G-[A-Z0-9]+|UA-\d+-\d+)$/i.test(value);
+const isGoogleTagManagerId = (value: string) => /^GTM-[A-Z0-9]+$/i.test(value);
+
 function resultUrl(kind: "saved" | "error", section: string, requestId?: string, message?: string) {
   const params = new URLSearchParams();
   params.set(kind, section);
@@ -157,10 +160,20 @@ export async function saveIntegrationSettings(formData: FormData) {
 
     const rawWpm = Number(formData.get("wpm") || 225);
     const wpm = Number.isFinite(rawWpm) ? Math.min(600, Math.max(100, rawWpm)) : 225;
+    let ga = text(formData, "ga", 100);
+    let gtm = text(formData, "gtm", 100);
+
+    if (!ga && isGoogleAnalyticsId(gtm)) {
+      ga = gtm;
+      gtm = "";
+    } else if (!gtm && isGoogleTagManagerId(ga)) {
+      gtm = ga;
+      ga = "";
+    }
 
     const values = {
-      "analytics.googleAnalyticsId": text(formData, "ga", 100),
-      "analytics.googleTagManagerId": text(formData, "gtm", 100),
+      "analytics.googleAnalyticsId": ga,
+      "analytics.googleTagManagerId": gtm,
       "comments.enabled": formData.get("commentsEnabled") === "on",
       "comments.requireModeration": formData.get("moderation") === "on",
       "newsletter.confirmationRequired": formData.get("confirmation") === "on",
