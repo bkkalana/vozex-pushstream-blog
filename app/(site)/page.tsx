@@ -27,6 +27,7 @@ import { NewsletterBand } from "@/components/site/v2/sections/newsletter-band";
 import { SplitHero } from "@/components/site/v2/sections/split-hero";
 import { StatsRow } from "@/components/site/v2/sections/stats-row";
 import { getHomePageV2Data, type PublicHomeSection } from "@/services/site/home-v2.service";
+import { resolveHeroMedia } from "@/services/site/hero-media.service";
 
 const iconMap = {
   ai: Bot,
@@ -122,6 +123,7 @@ function splitHeroHeading(section?: PublicHomeSection) {
 export default async function HomePage() {
   const data = await getHomePageV2Data();
   const hero = data.section("hero");
+  const heroMedia = await resolveHeroMedia(hero);
   const stats = data.section("stats");
   const categories = data.section("categories");
   const trending = data.section("trending");
@@ -148,8 +150,12 @@ export default async function HomePage() {
             label: stringConfig(hero, "secondaryCtaLabel", "Latest Articles"),
             href: stringConfig(hero, "secondaryCtaUrl", "/latest"),
           }}
-          image={data.heroImage?.path ?? null}
-          imageAlt={data.heroImage?.altText ?? "PushStream technology workspace"}
+          image={heroMedia.desktop?.path ?? heroMedia.mobile?.path ?? null}
+          mobileImage={heroMedia.mobile?.path ?? null}
+          imageAlt={heroMedia.alt || "PushStream technology workspace"}
+          imagePosition={heroMedia.desktopPosition}
+          mobileImagePosition={heroMedia.mobilePosition}
+          overlay={heroMedia.overlay}
           chips={heroChips(hero)}
         />
         </div>

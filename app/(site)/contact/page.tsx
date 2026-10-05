@@ -23,6 +23,8 @@ import { ContactForm } from "@/components/site/engagement/contact-form";
 import { PublicContainer } from "@/components/site/v2/primitives/container";
 import { NewsletterBand } from "@/components/site/v2/sections/newsletter-band";
 import { getEditorialPageData, type EditorialPageSection } from "@/services/site/about-contact-v2.service";
+import { ResponsiveHeroImage } from "@/components/site/v2/primitives/responsive-hero-image";
+import { resolveHeroMedia } from "@/services/site/hero-media.service";
 
 export const revalidate = 300;
 export const metadata: Metadata = {
@@ -54,7 +56,7 @@ export default async function ContactPage() {
   const faq = data.section("faq");
   const social = data.section("social");
   const newsletter = data.section("newsletter");
-  const heroImage = hero?.imageId ? data.media.get(hero.imageId) : null;
+  const heroMedia = await resolveHeroMedia(hero);
 
   const heroBadges = hero?.items.length
     ? hero.items.slice(0, 3)
@@ -114,12 +116,12 @@ export default async function ContactPage() {
               <h1>{hero.heading || "We’d Love to Hear from You"}<span>{stringConfig(hero, "accentText", "Start a Conversation.")}</span></h1>
               <p>{hero.description || "Questions, suggestions, partnership ideas, advertising enquiries or feedback are welcome. Send us a message and choose the topic that best fits."}</p>
               <div className="ps-hero-actions">
-                <Link href="#contact-form" className="ps-button ps-button-primary">{stringConfig(hero, "primaryCtaLabel", "Send a Message")} <ArrowRight size={16} /></Link>
-                <Link href="/about" className="ps-button ps-button-secondary">{stringConfig(hero, "secondaryCtaLabel", "About PushStream")}</Link>
+                <Link href={stringConfig(hero, "primaryCtaUrl", "#contact-form")} className="ps-button ps-button-primary">{stringConfig(hero, "primaryCtaLabel", "Send a Message")} <ArrowRight size={16} /></Link>
+                <Link href={stringConfig(hero, "secondaryCtaUrl", "/about")} className="ps-button ps-button-secondary">{stringConfig(hero, "secondaryCtaLabel", "About PushStream")}</Link>
               </div>
             </div>
             <div className="ps-contact-hero-visual">
-              <div className="ps-contact-hero-image">{heroImage ? <Image src={heroImage.path} alt={heroImage.altText ?? "Contact PushStream"} fill priority sizes="(max-width:900px) 100vw,45vw" className="object-cover" /> : <div className="ps-contact-hero-placeholder"><Send size={46} /><strong>Let’s talk.</strong><span>Questions • ideas • partnerships • feedback</span></div>}</div>
+              <div className="ps-contact-hero-image"><ResponsiveHeroImage desktop={heroMedia.desktop} mobile={heroMedia.mobile} alt={heroMedia.alt || "Contact PushStream"} desktopPosition={heroMedia.desktopPosition} mobilePosition={heroMedia.mobilePosition} overlay={heroMedia.overlay} sizes="(max-width:900px) 100vw,45vw" fallback={<div className="ps-contact-hero-placeholder"><Send size={46} /><strong>Let’s talk.</strong><span>Questions • ideas • partnerships • feedback</span></div>} /></div>
               {heroBadges.map((item, index) => { const Icon = contactIcon(item.icon || item.title); return <span key={`${item.title}-${index}`} className={`ps-contact-float ps-contact-float-${index + 1}`}><Icon size={17} /><span><strong>{item.title}</strong>{item.subtitle ? <small>{item.subtitle}</small> : null}</span></span>; })}
             </div>
           </PublicContainer>

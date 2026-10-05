@@ -13,7 +13,7 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     start_url: "/",
     scope: "/",
     display: "standalone",
-    background_color: "#ffffff",
+    background_color: "#fbf8f2",
     theme_color: "#087cff",
     icons: [
       { src: "/branding/favicon-192.png", sizes: "192x192", type: "image/png" },

@@ -52,3 +52,16 @@
 - [ ] Submit https://pushstream.online/sitemap.xml in Search Console
 - [ ] Inspect home page + representative article in URL Inspection
 - [ ] Validate article/review structured data with Google Rich Results Test
+
+
+## Public Page Hero CMS update
+- [x] Desktop hero image selector
+- [x] Optional mobile hero image selector with desktop fallback
+- [x] Hero alt text
+- [x] Desktop/mobile focal position
+- [x] Overlay strength control
+- [x] Hero heading, accent, description and eyebrow remain editable
+- [x] Primary and secondary CTA controls wired to major public hero renderers
+- [x] Hero enable/disable respected
+- [x] Home, Latest, WordPress, Development, How-To, Online Business, AI Tools, Reviews, Comparisons, About, Contact and Resources wired
+- [x] Accessibility, integration, visual-parity and SEO source audits pass

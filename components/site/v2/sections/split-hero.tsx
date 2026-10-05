@@ -1,8 +1,8 @@
-import Image from "next/image";
 import type { ReactNode } from "react";
 import { PublicContainer } from "../primitives/container";
 import { Eyebrow } from "../primitives/eyebrow";
 import { PrimaryButton, SecondaryButton } from "../primitives/buttons";
+import { ResponsiveHeroImage } from "../primitives/responsive-hero-image";
 
 type Chip = { label: string; icon?: ReactNode };
 
@@ -14,7 +14,11 @@ export function SplitHero({
   primary,
   secondary,
   image,
+  mobileImage,
   imageAlt,
+  imagePosition = "center",
+  mobileImagePosition = "center",
+  overlay = 0,
   chips = [],
   children,
 }: {
@@ -25,7 +29,11 @@ export function SplitHero({
   primary?: { label: string; href: string };
   secondary?: { label: string; href: string };
   image?: string | null;
+  mobileImage?: string | null;
   imageAlt?: string;
+  imagePosition?: "center" | "top" | "bottom" | "left" | "right";
+  mobileImagePosition?: "center" | "top" | "bottom" | "left" | "right";
+  overlay?: number;
   chips?: Chip[];
   children?: ReactNode;
 }) {
@@ -41,7 +49,7 @@ export function SplitHero({
         </div>
         <div className="ps-hero-visual">
           <div className="ps-hero-image">
-            {image ? <Image src={image} alt={imageAlt ?? ""} fill priority sizes="(max-width: 900px) 100vw, 50vw" className="object-cover" /> : <div className="ps-hero-image-placeholder" />}
+            <ResponsiveHeroImage desktop={image ? { path: image } : null} mobile={mobileImage ? { path: mobileImage } : null} alt={imageAlt} desktopPosition={imagePosition} mobilePosition={mobileImagePosition} overlay={overlay} fallback={<div className="ps-hero-image-placeholder" />} />
           </div>
           {chips.map((chip, index) => <div key={`${chip.label}-${index}`} className={`ps-hero-chip ps-hero-chip-${(index % 6) + 1}`}>{chip.icon}<span>{chip.label}</span></div>)}
         </div>

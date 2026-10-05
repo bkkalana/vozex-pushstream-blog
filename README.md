@@ -97,3 +97,18 @@ Phase 21 adds purpose-oriented responsive image variants, virtual media collecti
 
 ## Phase 25 worker
 Production PM2 config starts both the Next.js web process and `pushstream-worker`. The worker polls the database-backed queue and is responsible for scheduled publishing, analytics aggregation and maintenance. For cron-only environments, POST `/api/internal/jobs/process` with `Authorization: Bearer $CRON_SECRET`.
+
+## Physical SEO files
+
+This release ships `public/sitemap.xml` and `public/robots.txt` as physical static files so `/sitemap.xml` and `/robots.txt` do not depend on database/runtime availability. Validate them with:
+
+```bash
+npm run audit:static-seo
+```
+
+After deployment, verify:
+
+```bash
+curl -I https://pushstream.online/sitemap.xml
+curl https://pushstream.online/robots.txt
+```

@@ -1,0 +1,24 @@
+User-agent: *
+Allow: /
+Allow: /branding/
+Allow: /uploads/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /preview/
+Disallow: /go/
+
+User-agent: Googlebot-Image
+Allow: /branding/
+Allow: /uploads/
+
+User-agent: Bingbot
+Allow: /
+Allow: /branding/
+Allow: /uploads/
+Disallow: /admin/
+Disallow: /api/
+Disallow: /preview/
+Disallow: /go/
+
+Sitemap: https://pushstream.online/sitemap.xml
+Host: https://pushstream.online

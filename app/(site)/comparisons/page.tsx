@@ -14,6 +14,8 @@ import { NewsletterBand } from "@/components/site/v2/sections/newsletter-band";
 import { PaginationV2 } from "@/components/site/v2/primitives/pagination";
 import { SidebarCard } from "@/components/site/v2/primitives/sidebar-card";
 import { getComparisonsLandingData } from "@/services/site/reviews-comparisons-v2.service";
+import { ResponsiveHeroImage } from "@/components/site/v2/primitives/responsive-hero-image";
+import { resolveHeroMedia } from "@/services/site/hero-media.service";
 
 function one(value: string | string[] | undefined) { return Array.isArray(value) ? value[0] : value; }
 function pageNumber(value: string | string[] | undefined) { const number = Number(one(value) ?? 1); return Number.isFinite(number) && number > 0 ? Math.floor(number) : 1; }
@@ -26,23 +28,25 @@ export default async function ComparisonsPage({ searchParams }: { searchParams: 
   const data = await getComparisonsLandingData({ q, page });
   const sections = sectionMap(data.sections);
   const hero = sections.get("hero");
+  const heroMedia = await resolveHeroMedia(hero);
+  const showHero = Boolean(hero) || data.sections.length === 0;
   const listSection = sections.get("comparisons");
   const newsletter = sections.get("newsletter");
   const baseHref = q ? `/comparisons?q=${encodeURIComponent(q)}` : "/comparisons";
 
   return (
     <main className="ps-comparison-hub">
-      <section className="ps-comparison-hub-hero">
+      {showHero ? <section className="ps-comparison-hub-hero">
         <PublicContainer className="ps-comparison-hub-hero-grid">
           <div>
-            <span className="ps-eyebrow">Side-by-side decisions</span>
+            <span className="ps-eyebrow">{typeof hero?.config?.eyebrow === "string" && hero.config.eyebrow.trim() ? hero.config.eyebrow : "Side-by-side decisions"}</span>
             <h1>{hero?.heading || "Product Comparisons"}</h1>
             <p>{hero?.description || "Compare products, pricing, capabilities and key differences in one structured table before you choose."}</p>
-            <div className="ps-hero-actions"><Link href="#comparisons" className="ps-button ps-button-primary">Browse Comparisons <ArrowRight size={16} /></Link><Link href="/reviews" className="ps-button ps-button-secondary">Read Reviews</Link></div>
+            <div className="ps-hero-actions"><Link href={typeof hero?.config?.primaryCtaUrl === "string" && hero.config.primaryCtaUrl ? hero.config.primaryCtaUrl : "#comparisons"} className="ps-button ps-button-primary">{typeof hero?.config?.primaryCtaLabel === "string" && hero.config.primaryCtaLabel ? hero.config.primaryCtaLabel : "Browse Comparisons"} <ArrowRight size={16} /></Link><Link href={typeof hero?.config?.secondaryCtaUrl === "string" && hero.config.secondaryCtaUrl ? hero.config.secondaryCtaUrl : "/reviews"} className="ps-button ps-button-secondary">{typeof hero?.config?.secondaryCtaLabel === "string" && hero.config.secondaryCtaLabel ? hero.config.secondaryCtaLabel : "Read Reviews"}</Link></div>
           </div>
-          <div className="ps-comparison-visual-card"><GitCompareArrows size={38} /><strong>Compare what matters.</strong><span>2–3 products • typed feature rows • direct product links</span></div>
+          {heroMedia.desktop || heroMedia.mobile ? <div className="ps-comparison-hub-hero-media"><ResponsiveHeroImage desktop={heroMedia.desktop} mobile={heroMedia.mobile} alt={heroMedia.alt || "PushStream product comparisons"} desktopPosition={heroMedia.desktopPosition} mobilePosition={heroMedia.mobilePosition} overlay={heroMedia.overlay} sizes="(max-width: 860px) 100vw, 40vw" /></div> : <div className="ps-comparison-visual-card"><GitCompareArrows size={38} /><strong>Compare what matters.</strong><span>2–3 products • typed feature rows • direct product links</span></div>}
         </PublicContainer>
-      </section>
+      </section> : null}
 
       <section id="comparisons" className="ps-section ps-comparison-hub-content">
         <PublicContainer>

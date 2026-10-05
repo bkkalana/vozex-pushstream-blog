@@ -18,6 +18,8 @@ import {
 import { PublicContainer } from "@/components/site/v2/primitives/container";
 import { NewsletterBand } from "@/components/site/v2/sections/newsletter-band";
 import { getEditorialPageData, type EditorialPageSection } from "@/services/site/about-contact-v2.service";
+import { ResponsiveHeroImage } from "@/components/site/v2/primitives/responsive-hero-image";
+import { resolveHeroMedia } from "@/services/site/hero-media.service";
 
 export const revalidate = 300;
 export const metadata: Metadata = {
@@ -52,7 +54,7 @@ export default async function AboutPage() {
   const values = data.section("values");
   const community = data.section("community");
   const newsletter = data.section("newsletter");
-  const heroImage = hero?.imageId ? data.media.get(hero.imageId) : null;
+  const heroMedia = await resolveHeroMedia(hero);
 
   const missionItems = mission?.items.length
     ? mission.items.slice(0, 2)
@@ -120,11 +122,7 @@ export default async function AboutPage() {
             </div>
             <div className="ps-about-hero-visual">
               <div className="ps-about-hero-image">
-                {heroImage ? (
-                  <Image src={heroImage.path} alt={heroImage.altText ?? "About PushStream"} fill priority sizes="(max-width: 900px) 100vw, 45vw" className="object-cover" />
-                ) : (
-                  <div className="ps-about-hero-placeholder"><Users size={44} /><strong>{data.settings.siteName}</strong><span>{data.settings.tagline}</span></div>
-                )}
+                <ResponsiveHeroImage desktop={heroMedia.desktop} mobile={heroMedia.mobile} alt={heroMedia.alt || "About PushStream"} desktopPosition={heroMedia.desktopPosition} mobilePosition={heroMedia.mobilePosition} overlay={heroMedia.overlay} sizes="(max-width: 900px) 100vw, 45vw" fallback={<div className="ps-about-hero-placeholder"><Users size={44} /><strong>{data.settings.siteName}</strong><span>{data.settings.tagline}</span></div>} />
               </div>
               {(hero.items.length ? hero.items.slice(0, 3).map((item) => item.title).filter(Boolean) : ["Practical guides", "Independent reviews", "Builder community"]).map((label, index) => (
                 <span key={`${label}-${index}`} className={`ps-about-float ps-about-float-${index + 1}`}><CheckCircle2 size={14} /> {label}</span>

@@ -40,7 +40,8 @@
     "prebuild": "prisma generate",
     "pretypecheck": "prisma generate",
     "audit:prisma-client": "node scripts/prisma-client-freshness-audit.mjs",
-    "package:source": "bash scripts/package-source.sh"
+    "package:source": "bash scripts/package-source.sh",
+    "audit:static-seo": "node scripts/validate-static-seo-files.mjs"
   },
   "dependencies": {
     "@prisma/client": "^7.0.0",

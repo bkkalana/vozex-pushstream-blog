@@ -8,6 +8,8 @@ import { NewsletterBand } from "@/components/site/v2/sections/newsletter-band";
 import { PaginationV2 } from "@/components/site/v2/primitives/pagination";
 import { SidebarCard } from "@/components/site/v2/primitives/sidebar-card";
 import { getReviewsLandingData } from "@/services/site/reviews-comparisons-v2.service";
+import { ResponsiveHeroImage } from "@/components/site/v2/primitives/responsive-hero-image";
+import { resolveHeroMedia } from "@/services/site/hero-media.service";
 
 function one(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -34,6 +36,8 @@ export default async function ReviewsPage({
   const data = await getReviewsLandingData({ q, page });
   const sections = sectionMap(data.sections);
   const hero = sections.get("hero");
+  const heroMedia = await resolveHeroMedia(hero);
+  const showHero = Boolean(hero) || data.sections.length === 0;
   const reviewsSection = sections.get("reviews");
   const newsletter = sections.get("newsletter");
   const baseHref = q ? `/reviews?q=${encodeURIComponent(q)}` : "/reviews";
@@ -42,29 +46,24 @@ export default async function ReviewsPage({
 
   return (
     <main className="ps-review-hub">
-      <section className="ps-review-hub-hero">
+      {showHero ? <section className="ps-review-hub-hero">
         <PublicContainer className="ps-review-hub-hero-grid">
           <div>
-            <span className="ps-eyebrow">Independent editorial reviews</span>
+            <span className="ps-eyebrow">{typeof hero?.config?.eyebrow === "string" && hero.config.eyebrow.trim() ? hero.config.eyebrow : "Independent editorial reviews"}</span>
             <h1>{hero?.heading || "Reviews & Comparisons"}</h1>
             <p>{hero?.description || "Detailed technology reviews, practical ratings, product screenshots, pros and cons, alternatives and clear editorial verdicts."}</p>
             <div className="ps-hero-actions">
-              <Link href="#reviews" className="ps-button ps-button-primary">Browse Reviews <ArrowRight size={16} /></Link>
-              <Link href="/comparisons" className="ps-button ps-button-secondary">View Comparisons</Link>
+              <Link href={typeof hero?.config?.primaryCtaUrl === "string" && hero.config.primaryCtaUrl ? hero.config.primaryCtaUrl : "#reviews"} className="ps-button ps-button-primary">{typeof hero?.config?.primaryCtaLabel === "string" && hero.config.primaryCtaLabel ? hero.config.primaryCtaLabel : "Browse Reviews"} <ArrowRight size={16} /></Link>
+              <Link href={typeof hero?.config?.secondaryCtaUrl === "string" && hero.config.secondaryCtaUrl ? hero.config.secondaryCtaUrl : "/comparisons"} className="ps-button ps-button-secondary">{typeof hero?.config?.secondaryCtaLabel === "string" && hero.config.secondaryCtaLabel ? hero.config.secondaryCtaLabel : "View Comparisons"}</Link>
             </div>
           </div>
-          <div className="ps-review-hub-hero-panel">
+          {heroMedia.desktop || heroMedia.mobile ? <div className="ps-review-hub-hero-media"><ResponsiveHeroImage desktop={heroMedia.desktop} mobile={heroMedia.mobile} alt={heroMedia.alt || "PushStream reviews"} desktopPosition={heroMedia.desktopPosition} mobilePosition={heroMedia.mobilePosition} overlay={heroMedia.overlay} sizes="(max-width: 860px) 100vw, 40vw" /></div> : <div className="ps-review-hub-hero-panel">
             <span className="ps-review-hub-kicker">How we review</span>
             <strong>Structured ratings. Clear disclosures. Practical verdicts.</strong>
-            <ul>
-              <li>Manual editorial ratings</li>
-              <li>Pros, cons and pricing context</li>
-              <li>Affiliate/sponsorship disclosure</li>
-              <li>Product alternatives and comparisons</li>
-            </ul>
-          </div>
+            <ul><li>Manual editorial ratings</li><li>Pros, cons and pricing context</li><li>Affiliate/sponsorship disclosure</li><li>Product alternatives and comparisons</li></ul>
+          </div>}
         </PublicContainer>
-      </section>
+      </section> : null}
 
       <section id="reviews" className="ps-section ps-review-hub-content">
         <PublicContainer>

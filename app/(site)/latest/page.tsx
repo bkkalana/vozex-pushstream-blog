@@ -1,6 +1,8 @@
 export const revalidate = 300;
 
 import Image from "next/image";
+import { ResponsiveHeroImage } from "@/components/site/v2/primitives/responsive-hero-image";
+import { resolveHeroMedia } from "@/services/site/hero-media.service";
 import Link from "next/link";
 import { ArrowRight, BookOpen, FolderOpen, Search, Sparkles, Users } from "lucide-react";
 import { ArticleCardV2 } from "@/components/site/v2/cards/article-card";
@@ -52,6 +54,7 @@ export default async function LatestPage({ searchParams }: { searchParams: Promi
   const sort = sortRaw === "popular" || sortRaw === "oldest" ? sortRaw : "latest";
   const data = await getLatestPageV2Data({ page, query, category, sort });
   const hero = data.section("hero");
+  const heroMedia = await resolveHeroMedia(hero);
   const stats = data.section("stats");
   const featured = data.section("featured");
   const articles = data.section("articles");
@@ -77,12 +80,12 @@ export default async function LatestPage({ searchParams }: { searchParams: Promi
           <h1>{hero.heading || "Latest Articles"} <span>{configString(hero, "accentText", "Learn. Build. Grow.")}</span></h1>
           <p>{hero.description || "Explore practical tutorials, honest reviews and useful guides designed to help you solve problems, learn faster and build better online."}</p>
           <div className="ps-hero-actions">
-            <Link href="#articles" className="ps-button ps-button-primary">Browse Articles <ArrowRight size={16} /></Link>
-            <Link href="/ai-tools" className="ps-button ps-button-secondary">Explore AI Tools</Link>
+            <Link href={configString(hero, "primaryCtaUrl", "#articles")} className="ps-button ps-button-primary">{configString(hero, "primaryCtaLabel", "Browse Articles")} <ArrowRight size={16} /></Link>
+            <Link href={configString(hero, "secondaryCtaUrl", "/ai-tools")} className="ps-button ps-button-secondary">{configString(hero, "secondaryCtaLabel", "Explore AI Tools")}</Link>
           </div>
         </div>
         <div className="ps-latest-hero-visual">
-          <div className="ps-latest-hero-image">{data.heroImage ? <Image src={data.heroImage.path} alt={data.heroImage.altText ?? "PushStream latest articles workspace"} fill priority sizes="(max-width: 900px) 100vw, 46vw" className="object-cover" /> : <span className="ps-media-placeholder" />}</div>
+          <div className="ps-latest-hero-image"><ResponsiveHeroImage desktop={heroMedia.desktop} mobile={heroMedia.mobile} alt={heroMedia.alt || "PushStream latest articles workspace"} desktopPosition={heroMedia.desktopPosition} mobilePosition={heroMedia.mobilePosition} overlay={heroMedia.overlay} sizes="(max-width: 900px) 100vw, 46vw" fallback={<span className="ps-media-placeholder" />} /></div>
           {chips.map((chip, index) => <div key={chip.label} className={`ps-latest-chip ps-latest-chip-${index + 1}`}>{chip.icon}<span>{chip.label}</span></div>)}
         </div>
       </PublicContainer>

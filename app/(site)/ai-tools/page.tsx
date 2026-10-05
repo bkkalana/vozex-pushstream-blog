@@ -22,6 +22,8 @@ import { PaginationV2 } from "@/components/site/v2/primitives/pagination";
 import { NewsletterBand } from "@/components/site/v2/sections/newsletter-band";
 import { StatsRow } from "@/components/site/v2/sections/stats-row";
 import { getAiToolsV2Page } from "@/services/site/ai-tools-v2.service";
+import { ResponsiveHeroImage } from "@/components/site/v2/primitives/responsive-hero-image";
+import { resolveHeroMedia } from "@/services/site/hero-media.service";
 
 export const revalidate = 300;
 
@@ -74,6 +76,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Raw
   const data = await getAiToolsV2Page(raw);
 
   const hero = data.section("hero");
+  const heroMedia = await resolveHeroMedia(hero);
   const stats = data.section("stats");
   const categoriesSection = data.section("categories");
   const topSection = data.section("top-tools");
@@ -120,33 +123,18 @@ export default async function Page({ searchParams }: { searchParams: Promise<Raw
                 {hero.description || "Discover practical AI tools for writing, images, video, audio, design, automation and productivity. Compare pricing, ratings, features and verified editorial notes before you choose."}
               </p>
               <div className="ps-hero-actions">
-                <Link href="#directory" className="ps-button ps-button-primary">
-                  Explore AI Tools <ArrowRight size={16} />
+                <Link href={sectionString(hero, "primaryCtaUrl", "#directory")} className="ps-button ps-button-primary">
+                  {sectionString(hero, "primaryCtaLabel", "Explore AI Tools")} <ArrowRight size={16} />
                 </Link>
-                <Link href="/reviews" className="ps-button ps-button-secondary">
-                  How We Review
+                <Link href={sectionString(hero, "secondaryCtaUrl", "/reviews")} className="ps-button ps-button-secondary">
+                  {sectionString(hero, "secondaryCtaLabel", "How We Review")}
                 </Link>
               </div>
             </div>
 
             <div className="ps-ai-hero-visual">
               <div className="ps-ai-hero-image">
-                {data.heroImage ? (
-                  <Image
-                    src={data.heroImage.path}
-                    alt={data.heroImage.altText ?? "AI tools illustration"}
-                    fill
-                    priority
-                    sizes="(max-width: 900px) 100vw, 46vw"
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="ps-ai-hero-placeholder">
-                    <Sparkles size={38} />
-                    <strong>AI Tools Directory</strong>
-                    <span>Writing · Image · Video · Audio · Productivity</span>
-                  </div>
-                )}
+                <ResponsiveHeroImage desktop={heroMedia.desktop} mobile={heroMedia.mobile} alt={heroMedia.alt || "AI tools illustration"} desktopPosition={heroMedia.desktopPosition} mobilePosition={heroMedia.mobilePosition} overlay={heroMedia.overlay} sizes="(max-width: 900px) 100vw, 46vw" fallback={<div className="ps-ai-hero-placeholder"><Sparkles size={38} /><strong>AI Tools Directory</strong><span>Writing · Image · Video · Audio · Productivity</span></div>} />
               </div>
               {heroChips.map((chip, index) => (
                 <span key={`${chip}-${index}`} className={`ps-ai-chip ps-ai-chip-${index + 1}`}>

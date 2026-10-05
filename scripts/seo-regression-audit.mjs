@@ -11,8 +11,8 @@ function check(name, ok, detail = "") {
   else failures.push(`${name}${detail ? ` — ${detail}` : ""}`);
 }
 
-const sitemap = read("app/sitemap.ts");
-const robots = read("app/robots.ts");
+const sitemap = read("public/sitemap.xml");
+const robots = read("public/robots.txt");
 const search = read("app/(site)/search/page.tsx");
 const rootLayout = read("app/layout.tsx");
 const rss = read("app/rss.xml/route.ts");
@@ -31,19 +31,18 @@ check("Bing admin settings", seoAdminPage.includes("Bing Webmaster Tools verific
 check("square Google favicon metadata", rootLayout.includes("favicon-512.png"));
 check("default OG image fallback", seoSite.includes("/branding/default-og.png"));
 check("WebSite schema supports alternateName", read("lib/seo/schema.ts").includes("alternateName"));
-check("sitemap excludes empty taxonomies", sitemap.includes("posts:{some:publishedPostWhere(now)}") && sitemap.includes("posts:{some:{post:publishedPostWhere(now)}}"));
-check("sitemap supports image discovery", sitemap.includes("images:["));
+check("physical sitemap XML", sitemap.startsWith("<?xml") && sitemap.includes("<urlset"));
+check("sitemap production origin", sitemap.includes("https://pushstream.online/"));
 
 for (const route of ["/", "/latest", "/ai-tools", "/reviews", "/comparisons", "/about", "/contact", "/guides", "/resources"]) {
-  check(`sitemap static route ${route}`, sitemap.includes(`\"${route}\"`) || sitemap.includes(`'${route}'`));
+  const absolute = `https://pushstream.online${route === "/" ? "/" : route}`;
+  check(`sitemap static route ${route}`, sitemap.includes(`<loc>${absolute}</loc>`));
 }
-check("sitemap published posts filter", /status:\s*"PUBLISHED"/.test(sitemap) && /publishedAt:\s*\{lte:now\}/.test(sitemap));
-check("sitemap guide detail coverage", sitemap.includes("featuredCollection.findMany") && sitemap.includes("/guides/${x.slug}"));
-check("sitemap series coverage", sitemap.includes("contentSeries.findMany") && sitemap.includes("/series/${x.slug}"));
-check("robots blocks admin", robots.includes('"/admin/"'));
-check("robots blocks api", robots.includes('"/api/"'));
-check("robots allows search page to expose noindex", !robots.includes('"/search"'));
-check("robots blocks preview", robots.includes('"/preview/"'));
+check("robots advertises sitemap", robots.includes("Sitemap: https://pushstream.online/sitemap.xml"));
+check("robots blocks admin", robots.includes("Disallow: /admin/"));
+check("robots blocks api", robots.includes("Disallow: /api/"));
+check("robots allows search page to expose noindex", !robots.includes("Disallow: /search"));
+check("robots blocks preview", robots.includes("Disallow: /preview/"));
 check("search page noindex", /robots:\s*\{index:false/.test(search));
 check("root RSS alternate", rootLayout.includes('application/rss+xml'));
 check("root RSS has self link", rss.includes('rel="self"') && rss.includes('xmlns:atom'));
