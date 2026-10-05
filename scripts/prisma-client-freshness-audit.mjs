@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
+import { execFileSync } from "node:child_process";
 
 const root = process.cwd();
 const schema = fs.readFileSync(path.join(root, "prisma/schema.prisma"), "utf8");
@@ -24,7 +25,14 @@ for (const scriptName of ["postinstall", "prebuild", "pretypecheck"]) {
   }
 }
 
-if (fs.existsSync(path.join(root, "generated/prisma"))) {
+let trackedGenerated = "";
+try {
+  trackedGenerated = execFileSync("git", ["ls-files", "generated/prisma"], { cwd: root, encoding: "utf8" }).trim();
+} catch {
+  trackedGenerated = "";
+}
+
+if (trackedGenerated) {
   failures.push("Release source must not ship a committed generated/prisma client; generate it from prisma/schema.prisma on install/build.");
 }
 

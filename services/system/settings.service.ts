@@ -12,10 +12,24 @@ function isHttpUrl(value:string){
   }
 }
 
+function normalizeHttpUrl(value:string){
+  const trimmed=value.trim();
+  if(!trimmed)return "";
+  if(/^https?:\/\//i.test(trimmed))return trimmed;
+  if(/^[a-z0-9][a-z0-9.-]+\.[a-z]{2,}(?:[/:?#].*)?$/i.test(trimmed))return `https://${trimmed}`;
+  return trimmed;
+}
+
 function isSafeInternalAssetUrl(value:string){
   // Site-managed logo/favicon/media settings may use a same-origin public path.
   // Protocol-relative URLs (//host/path), backslashes and control characters are rejected.
   return /^\/(?!\/)[^\\\u0000-\u001F]*$/.test(value);
+}
+
+function normalizeSettingValue(key:string,value:string|number|boolean){
+  if(typeof value!=="string")return value;
+  if(key.startsWith("social.")||key.endsWith("Url"))return normalizeHttpUrl(value);
+  return value.trim();
 }
 
 function validate(key:string,value:string|number|boolean){
@@ -40,23 +54,24 @@ export async function getSettingsMap(group?:string){
 }
 
 export async function upsertSettings(group:string,values:Record<string,string|number|boolean>,userId?:string){
-  for(const[k,v]of Object.entries(values))validate(k,v);
+  const normalized=Object.fromEntries(Object.entries(values).map(([key,value])=>[key,normalizeSettingValue(key,value)])) as Record<string,string|number|boolean>;
+  for(const[k,v]of Object.entries(normalized))validate(k,v);
 
-  const keys=Object.keys(values);
+  const keys=Object.keys(normalized);
   const before=await prisma.siteSetting.findMany({where:{key:{in:keys}},select:{key:true,value:true}});
   const previous=new Map(before.map(x=>[x.key,x.value]));
 
   // The settings write is the primary operation. Do not make it dependent on
   // optional history/audit storage being perfectly in sync with the deployment.
   await prisma.$transaction(
-    Object.entries(values).map(([key,value])=>prisma.siteSetting.upsert({
+    Object.entries(normalized).map(([key,value])=>prisma.siteSetting.upsert({
       where:{key},
       update:{value,group},
       create:{key,value,group},
     })),
   );
 
-  const changes=Object.entries(values).filter(([key,value])=>JSON.stringify(previous.get(key))!==JSON.stringify(value));
+  const changes=Object.entries(normalized).filter(([key,value])=>JSON.stringify(previous.get(key))!==JSON.stringify(value));
   if(changes.length===0)return;
 
   try{

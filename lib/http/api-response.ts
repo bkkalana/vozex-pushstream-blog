@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { ZodError } from "zod";
 import { AppError } from "@/lib/errors/app-error";
 import { logger } from "@/lib/logging/logger";
 
@@ -7,9 +6,14 @@ export function apiSuccess<T>(data: T, init?: ResponseInit) {
   return NextResponse.json({ success: true, data, error: null }, init);
 }
 
+function isZodError(error: unknown): error is { name?: string; issues: unknown[]; flatten?: () => unknown } {
+  return Boolean(error && typeof error === "object" && Array.isArray((error as { issues?: unknown }).issues));
+}
+
 export function apiError(error: unknown, requestId?: string) {
-  if (error instanceof ZodError) {
-    return NextResponse.json({ success: false, data: null, error: { code: "VALIDATION_ERROR", message: "Please check the submitted fields.", details: (error as ZodError).flatten(), requestId } }, { status: 422 });
+  if (isZodError(error)) {
+    const details = typeof error.flatten === "function" ? error.flatten() : { issues: error.issues };
+    return NextResponse.json({ success: false, data: null, error: { code: "VALIDATION_ERROR", message: "Please check the submitted fields.", details, requestId } }, { status: 422 });
   }
   if (error instanceof AppError) {
     const appError = error as AppError;

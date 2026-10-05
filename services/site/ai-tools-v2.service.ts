@@ -70,13 +70,13 @@ export async function getAiToolsV2Page(raw: Record<string, string | undefined>) 
   const byKey = new Map(sections.map((section) => [section.sectionKey, section]));
 
   const topSection = byKey.get("top-tools");
-  const selected = manualSelection(topSection);
-  const selectedRows = selected.length ? await prisma.aiTool.findMany({
-    where: { id: { in: selected }, status: "PUBLISHED", deletedAt: null },
+  const selectedFeaturedIds = manualSelection(topSection);
+  const selectedRows = selectedFeaturedIds.length ? await prisma.aiTool.findMany({
+    where: { id: { in: selectedFeaturedIds }, status: "PUBLISHED", deletedAt: null },
     include: { category: true, logo: true, features: { take: 3, orderBy: { sortOrder: "asc" } }, useCases: { take: 3, orderBy: { sortOrder: "asc" } } },
   }) : [];
   const selectedMap = new Map(selectedRows.map((tool) => [tool.id, tool]));
-  const manualTop = selected.map((id) => selectedMap.get(id)).filter((tool): tool is (typeof selectedRows)[number] => tool != null);
+  const manualTop = selectedFeaturedIds.map((id) => selectedMap.get(id)).filter((tool): tool is (typeof selectedRows)[number] => tool != null);
   const topTools = manualTop.length ? manualTop : await aiToolService.featured();
 
   const hero = byKey.get("hero");

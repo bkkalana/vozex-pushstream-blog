@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { CACHE_TAGS, revalidatePublicContent } from "@/lib/cache/invalidation";
 import { requirePermission } from "@/lib/auth/session";
+import { AppError } from "@/lib/errors/app-error";
 import { logger } from "@/lib/logging/logger";
 import { auditService } from "@/services/audit/audit.service";
 import { upsertSettings } from "@/services/system/settings.service";
@@ -12,11 +13,31 @@ import { upsertSettings } from "@/services/system/settings.service";
 const text = (formData: FormData, key: string, max = 500) =>
   String(formData.get(key) ?? "").trim().slice(0, max);
 
-function resultUrl(kind: "saved" | "error", section: string, requestId?: string) {
+function resultUrl(kind: "saved" | "error", section: string, requestId?: string, message?: string) {
   const params = new URLSearchParams();
   params.set(kind, section);
   if (requestId) params.set("request", requestId);
+  if (message) params.set("message", message);
   return `/admin/settings?${params.toString()}`;
+}
+
+function publicErrorMessage(error: unknown) {
+  if (error instanceof AppError) return error.message;
+  if (!(error instanceof Error)) return "Settings could not be saved. Please try again.";
+
+  const safeMessages = new Set([
+    "Invalid email setting.",
+    "Social profile URLs must use HTTP or HTTPS.",
+    "Logo and favicon URLs must be an HTTP/HTTPS URL or a site-relative path beginning with /.",
+    "Only HTTP/HTTPS URLs are allowed.",
+    "Invalid Google Analytics ID.",
+    "Invalid Google Tag Manager ID.",
+    "Reading speed must be 100–600 words/minute.",
+  ]);
+
+  return safeMessages.has(error.message)
+    ? error.message
+    : "Settings could not be saved. Please try again.";
 }
 
 function safeRefreshSettings() {
@@ -93,7 +114,7 @@ export async function saveGeneralSettings(formData: FormData) {
     safeRefreshSettings();
   } catch (error) {
     logSaveFailure("general", requestId, error);
-    redirect(resultUrl("error", "general", requestId));
+    redirect(resultUrl("error", "general", requestId, publicErrorMessage(error)));
   }
 
   redirect(resultUrl("saved", "general"));
@@ -120,7 +141,7 @@ export async function saveSocialSettings(formData: FormData) {
     safeRefreshSettings();
   } catch (error) {
     logSaveFailure("social", requestId, error);
-    redirect(resultUrl("error", "social", requestId));
+    redirect(resultUrl("error", "social", requestId, publicErrorMessage(error)));
   }
 
   redirect(resultUrl("saved", "social"));
@@ -151,7 +172,7 @@ export async function saveIntegrationSettings(formData: FormData) {
     safeRefreshSettings();
   } catch (error) {
     logSaveFailure("integrations", requestId, error);
-    redirect(resultUrl("error", "integrations", requestId));
+    redirect(resultUrl("error", "integrations", requestId, publicErrorMessage(error)));
   }
 
   redirect(resultUrl("saved", "integrations"));
