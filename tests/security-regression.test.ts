@@ -25,5 +25,7 @@ describe("security regressions", () => {
     expect(csp).toContain("base-uri 'self'");
     expect(csp).toContain("frame-ancestors 'none'");
     expect(csp).toContain("form-action 'self'");
+    expect(csp).toContain("https://www.googletagmanager.com");
+    expect(csp).toContain("https://www.google-analytics.com");
   });
 });
