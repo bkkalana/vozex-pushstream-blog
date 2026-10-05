@@ -64,7 +64,7 @@ export function V2SiteHeaderClient({siteName,logoUrl,items,megaItems}:{siteName:
       <div className="ml-auto flex items-center gap-2 xl:ml-3">
         <Link href="/search" aria-label="Search PushStream" className="ps-header-icon"><Search size={19} strokeWidth={2.2} aria-hidden="true"/></Link>
         <Link href="/#newsletter" className="ps-header-subscribe hidden sm:inline-flex"><Mail size={16} aria-hidden="true"/>Subscribe</Link>
-        <button ref={menuButtonRef} type="button" aria-label={open?"Close menu":"Open menu"} aria-expanded={open} aria-controls="mobile-site-menu" onClick={()=>setOpen(v=>!v)} className="ps-header-icon border border-[var(--ps-border)] xl:hidden">{open?<X size={21}/>:<Menu size={21}/>}</button>
+        <button ref={menuButtonRef} type="button" aria-label={open?"Close menu":"Open menu"} aria-expanded={open} aria-controls="mobile-site-menu" onClick={()=>setOpen(v=>!v)} className="ps-header-icon ps-mobile-menu-trigger border border-[var(--ps-border)]">{open?<X size={21}/>:<Menu size={21}/>}</button>
       </div>
     </div>
 
