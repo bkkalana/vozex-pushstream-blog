@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { ChevronDown, Mail, Menu, Search, X } from "lucide-react";
 import { PublicBrand } from "@/components/site/v2/layout/brand";
 
@@ -20,10 +21,12 @@ export function V2SiteHeaderClient({siteName,logoUrl,items,megaItems}:{siteName:
   const pathname=usePathname();
   const [open,setOpen]=useState(false);
   const [mobileOpen,setMobileOpen]=useState<string|null>(null);
+  const [mounted,setMounted]=useState(false);
   const dialogRef=useRef<HTMLDivElement>(null);
   const menuButtonRef=useRef<HTMLButtonElement>(null);
   const roots=items.filter(x=>!x.parentId);
 
+  useEffect(()=>{setMounted(true)},[]);
   useEffect(()=>{setOpen(false);setMobileOpen(null)},[pathname]);
   useEffect(()=>{
     if(!open)return;
@@ -68,22 +71,25 @@ export function V2SiteHeaderClient({siteName,logoUrl,items,megaItems}:{siteName:
       </div>
     </div>
 
-    {open?<div className="fixed inset-x-0 bottom-0 top-[69px] z-50 bg-[rgba(7,27,74,.28)] backdrop-blur-[2px] xl:hidden" onMouseDown={event=>{if(event.target===event.currentTarget)setOpen(false)}}>
-      <div ref={dialogRef} id="mobile-site-menu" className="ml-auto flex h-full w-full max-w-[430px] flex-col overflow-y-auto border-l border-[var(--ps-border)] bg-white shadow-2xl" role="dialog" aria-modal="true" aria-label="Mobile navigation">
-        <nav className="px-5 py-4" aria-label="Mobile primary navigation">
-          {roots.map(item=>{const children=megaItems.filter(child=>child.parentId===item.id);const isActive=active(pathname,item.url)||children.some(x=>active(pathname,x.url));return <div key={item.id} className="border-b border-[var(--ps-border)] last:border-0">
-            <div className="flex items-center gap-2">
-              <Link href={item.url} aria-current={isActive?"page":undefined} className={`flex min-h-14 flex-1 items-center py-3 text-[1.02rem] font-extrabold ${isActive?"text-[var(--ps-blue)]":"text-[var(--ps-navy)]"}`}>{item.label}</Link>
-              {children.length?<button className="grid size-11 place-items-center rounded-lg text-[var(--ps-muted)] hover:bg-[var(--ps-blue-soft)]" type="button" aria-expanded={mobileOpen===item.id} aria-label={`Toggle ${item.label} submenu`} onClick={()=>setMobileOpen(v=>v===item.id?null:item.id)}><ChevronDown size={18} className={`transition ${mobileOpen===item.id?"rotate-180":""}`}/></button>:null}
-            </div>
-            {children.length&&mobileOpen===item.id?<div className="mb-3 rounded-xl bg-[var(--ps-surface-soft)] p-2">{children.map(child=><Link key={child.id} href={child.url} className="block rounded-lg px-3 py-3 text-sm font-bold text-[var(--ps-text)] hover:bg-white hover:text-[var(--ps-blue)]">{child.label}</Link>)}</div>:null}
-          </div>})}
-        </nav>
-        <div className="mt-auto border-t border-[var(--ps-border)] p-5">
-          <Link href="/search" className="mb-3 flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[var(--ps-border)] font-extrabold text-[var(--ps-navy)]"><Search size={18}/>Search</Link>
-          <Link href="/#newsletter" className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--ps-blue)] font-extrabold text-white"><Mail size={17}/>Subscribe</Link>
+    {mounted&&open?createPortal(
+      <div className="fixed inset-x-0 bottom-0 top-[68px] z-[70] bg-[rgba(7,27,74,.32)] backdrop-blur-[2px] xl:hidden" onMouseDown={event=>{if(event.target===event.currentTarget)setOpen(false)}}>
+        <div ref={dialogRef} id="mobile-site-menu" className="ml-auto flex h-full w-[min(92vw,430px)] flex-col overflow-y-auto overscroll-contain border-l border-[var(--ps-border)] bg-white shadow-2xl" role="dialog" aria-modal="true" aria-label="Mobile navigation">
+          <nav className="px-5 py-4" aria-label="Mobile primary navigation">
+            {roots.map(item=>{const children=megaItems.filter(child=>child.parentId===item.id);const isActive=active(pathname,item.url)||children.some(x=>active(pathname,x.url));return <div key={item.id} className="border-b border-[var(--ps-border)] last:border-0">
+              <div className="flex items-center gap-2">
+                <Link href={item.url} aria-current={isActive?"page":undefined} className={`flex min-h-14 flex-1 items-center py-3 text-[1.02rem] font-extrabold ${isActive?"text-[var(--ps-blue)]":"text-[var(--ps-navy)]"}`}>{item.label}</Link>
+                {children.length?<button className="grid size-11 place-items-center rounded-lg text-[var(--ps-muted)] hover:bg-[var(--ps-blue-soft)]" type="button" aria-expanded={mobileOpen===item.id} aria-label={`Toggle ${item.label} submenu`} onClick={()=>setMobileOpen(v=>v===item.id?null:item.id)}><ChevronDown size={18} className={`transition ${mobileOpen===item.id?"rotate-180":""}`}/></button>:null}
+              </div>
+              {children.length&&mobileOpen===item.id?<div className="mb-3 rounded-xl bg-[var(--ps-surface-soft)] p-2">{children.map(child=><Link key={child.id} href={child.url} className="block rounded-lg px-3 py-3 text-sm font-bold text-[var(--ps-text)] hover:bg-white hover:text-[var(--ps-blue)]">{child.label}</Link>)}</div>:null}
+            </div>})}
+          </nav>
+          <div className="mt-auto border-t border-[var(--ps-border)] p-5">
+            <Link href="/search" className="mb-3 flex min-h-12 items-center justify-center gap-2 rounded-xl border border-[var(--ps-border)] font-extrabold text-[var(--ps-navy)]"><Search size={18}/>Search</Link>
+            <Link href="/#newsletter" className="flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[var(--ps-blue)] font-extrabold text-white"><Mail size={17}/>Subscribe</Link>
+          </div>
         </div>
-      </div>
-    </div>:null}
+      </div>,
+      document.body
+    ):null}
   </header>
 }
