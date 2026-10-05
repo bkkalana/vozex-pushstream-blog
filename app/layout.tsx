@@ -3,6 +3,7 @@ import { Inter, Manrope, Plus_Jakarta_Sans } from "next/font/google";
 import { Toaster } from "sonner";
 import Script from "next/script";
 import { env } from "@/lib/env";
+import { ConsentBanner } from "@/components/site/consent-banner";
 import { getSeoSiteConfig } from "@/lib/seo/site";
 import { appearanceVariablesFromSettings, getSettingsMap } from "@/services/system/settings.service";
 import "./globals.css";
@@ -39,5 +40,5 @@ export default async function RootLayout({ children }: Readonly<{ children: Reac
   const fontVar = font === "Manrope" ? "var(--font-manrope)" : font === "Plus Jakarta Sans" ? "var(--font-jakarta)" : "var(--font-inter)";
   const googleAnalyticsId = String(integrations.get("analytics.googleAnalyticsId") ?? "G-CT25S0HK0Y").trim();
   const validGoogleAnalyticsId = /^G-[A-Z0-9]+$/i.test(googleAnalyticsId) ? googleAnalyticsId : "";
-  return <html lang="en"><body className={`${inter.variable} ${manrope.variable} ${jakarta.variable}`} style={{...appearance,"--site-font":fontVar} as React.CSSProperties}>{children}<Toaster richColors closeButton position="top-right" />{validGoogleAnalyticsId ? <><Script src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(validGoogleAnalyticsId)}`} strategy="afterInteractive"/><Script id="google-analytics" strategy="afterInteractive">{`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} gtag('js', new Date()); gtag('config', '${validGoogleAnalyticsId}');`}</Script></> : null}</body></html>;
+  return <html lang="en"><body className={`${inter.variable} ${manrope.variable} ${jakarta.variable}`} style={{...appearance,"--site-font":fontVar} as React.CSSProperties}>{children}<Toaster richColors closeButton position="top-right" /><ConsentBanner />{validGoogleAnalyticsId ? <><Script id="google-consent-default" strategy="beforeInteractive">{`window.dataLayer = window.dataLayer || []; function gtag(){dataLayer.push(arguments);} var psConsent = null; try { psConsent = localStorage.getItem('pushstream.analyticsConsent'); } catch (e) {} gtag('consent', 'default', { analytics_storage: psConsent === 'granted' ? 'granted' : 'denied', ad_storage: 'denied', ad_user_data: 'denied', ad_personalization: 'denied', wait_for_update: 500 });`}</Script><Script src={`https://www.googletagmanager.com/gtag/js?id=${encodeURIComponent(validGoogleAnalyticsId)}`} strategy="afterInteractive"/><Script id="google-analytics" strategy="afterInteractive">{`gtag('js', new Date()); gtag('config', '${validGoogleAnalyticsId}');`}</Script></> : null}</body></html>;
 }
