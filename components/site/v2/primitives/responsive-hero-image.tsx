@@ -64,7 +64,7 @@ export function ResponsiveHeroImage({
         style={{ ...desktopImage.style, objectPosition: desktopPosition }}
       />
     </picture>
-    {mobileImage ? <style>{`@media (max-width:767px){.ps-hero-media-picture{object-position:${mobileImagePosition}!important}}`}</style> : null}
+    {mobileImage ? <style>{`@media (max-width:767px){.ps-hero-media-picture{object-position:${mobilePosition}!important}}`}</style> : null}
     {safeOverlay > 0 ? <span className="ps-hero-media-overlay" style={{ backgroundColor: `rgba(0,0,0,${safeOverlay / 100})` }} aria-hidden="true" /> : null}
   </>;
 }
