@@ -247,7 +247,7 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      {reviews ? (
+      {reviews && (data.reviews.length || data.comparisons.length) ? (
         <section style={{ order: reviews.sortOrder }} className="ps-section ps-home-reviews">
           <PublicContainer>
             <SectionHeading
@@ -256,12 +256,10 @@ export default async function HomePage() {
               description={reviews.description || "Independent reviews and practical side-by-side comparisons."}
               action={<Link href="/reviews" className="ps-inline-link">View All Reviews →</Link>}
             />
-            {(data.reviews.length || data.comparisons.length) ? (
-              <div className="ps-home-review-grid">
-                {data.reviews.map((review) => <ReviewCardV2 key={`review-${review.id}`} review={review} />)}
-                {data.comparisons.map((comparison) => <ComparisonCardV2 key={`comparison-${comparison.id}`} comparison={comparison} />)}
-              </div>
-            ) : <div className="ps-empty-state">No published reviews or comparisons yet.</div>}
+            <div className="ps-home-review-grid">
+              {data.reviews.map((review) => <ReviewCardV2 key={`review-${review.id}`} review={review} />)}
+              {data.comparisons.map((comparison) => <ComparisonCardV2 key={`comparison-${comparison.id}`} comparison={comparison} />)}
+            </div>
             <div className="ps-home-review-cta"><PrimaryButton href="/reviews" arrow>Explore Reviews</PrimaryButton></div>
           </PublicContainer>
         </section>

@@ -27,6 +27,12 @@ export function revalidateToolSurfaces() {
   revalidatePath("/ai-tools/[slug]", "page");
 }
 
+export function revalidateReviewSurfaces() {
+  revalidatePublicContent([CACHE_TAGS.homepage], ["/", "/reviews", "/comparisons"]);
+  revalidatePath("/reviews/[slug]", "page");
+  revalidatePath("/comparisons/[slug]", "page");
+}
+
 export async function revalidateAffectedPost(postId:string){
   const {prisma}=await import("@/lib/db/prisma");
   const post=await prisma.post.findUnique({where:{id:postId},select:{slug:true,status:true,category:{select:{slug:true}},author:{select:{authorProfile:{select:{slug:true}}}},tags:{select:{tag:{select:{slug:true}}}}}});

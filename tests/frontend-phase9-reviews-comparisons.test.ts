@@ -48,4 +48,17 @@ describe("frontend phase 9 reviews and comparisons", () => {
     expect(form).toContain("initial.screenshots.map");
     expect(form).toContain("Ranked products / providers");
   });
+
+  it("revalidates homepage review surfaces after admin review and comparison changes", () => {
+    const cache = read("lib/cache/invalidation.ts");
+    const routes = [
+      read("app/api/admin/reviews/route.ts"),
+      read("app/api/admin/reviews/[id]/route.ts"),
+      read("app/api/admin/comparisons/route.ts"),
+      read("app/api/admin/comparisons/[id]/route.ts"),
+    ].join("\n");
+    expect(cache).toContain("revalidateReviewSurfaces");
+    expect(cache).toContain('["/", "/reviews", "/comparisons"]');
+    expect(routes.match(/revalidateReviewSurfaces\(\)/g)?.length).toBe(6);
+  });
 });

@@ -40,4 +40,10 @@ describe("frontend phase 4 homepage", () => {
     expect(service).toContain("category._count.posts > 0");
     expect(page).toContain("data.publishedPostCount");
   });
+
+  it("hides the homepage reviews block when there are no review or comparison records", () => {
+    const page = read("app/(site)/page.tsx");
+    expect(page).toContain("reviews && (data.reviews.length || data.comparisons.length)");
+    expect(page).not.toContain("No published reviews or comparisons yet.");
+  });
 });
