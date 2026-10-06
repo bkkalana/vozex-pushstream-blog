@@ -32,4 +32,12 @@ describe("frontend phase 4 homepage", () => {
     expect(service).toContain("deletedAt: null");
     expect(service).toContain("publishedAt: { lte: now }");
   });
+
+  it("does not render empty post-driven homepage cards after posts are removed", () => {
+    const page = read("app/(site)/page.tsx");
+    const service = read("services/site/home-v2.service.ts");
+    expect(service).toContain("publishedPostCount");
+    expect(service).toContain("category._count.posts > 0");
+    expect(page).toContain("data.publishedPostCount");
+  });
 });

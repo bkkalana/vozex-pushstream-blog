@@ -24,6 +24,8 @@ describe("frontend v2 global shell",()=>{
   it("keeps footer navigation and social URLs database/settings driven",()=>{
     const footer=read("components/site/v2/layout/site-footer.tsx");
     const service=read("services/site/home.service.ts");
+    expect(footer).toContain("ps-site-footer");
+    expect(footer).toContain("ps-container-full");
     expect(footer).toContain('chrome.menus.get("footer")');
     expect(service).toContain('setting.get("social.facebook")');
     expect(service).toContain("footerBrandCardTitle");

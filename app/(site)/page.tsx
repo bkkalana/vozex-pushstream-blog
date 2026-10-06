@@ -77,15 +77,16 @@ function getCategoryIcon(slug: string, configured?: string | null) {
   return iconMap.default;
 }
 
-function homeStats(section?: PublicHomeSection) {
+function homeStats(section: PublicHomeSection | undefined, publishedPostCount: number) {
   if (section?.items.length) {
     return section.items.slice(0, 4).map((item) => ({
       value: item.title || item.itemKey || "—",
       label: item.subtitle || item.body || "",
     }));
   }
+  const articleLabel = publishedPostCount === 1 ? "Published Article" : "Published Articles";
   return [
-    { value: "500+", label: "In-depth Articles" },
+    { value: publishedPostCount ? `${publishedPostCount}+` : "0", label: articleLabel },
     { value: "50+", label: "Tools Reviewed" },
     { value: "100K+", label: "Monthly Readers" },
     { value: "4.9/5", label: "Community Rating" },
@@ -164,7 +165,7 @@ export default async function HomePage() {
       {stats ? (
         <section style={{ order: stats.sortOrder }} className="ps-home-stats-strip">
           <PublicContainer>
-            <StatsRow items={homeStats(stats)} />
+            <StatsRow items={homeStats(stats, data.publishedPostCount)} />
           </PublicContainer>
         </section>
       ) : null}

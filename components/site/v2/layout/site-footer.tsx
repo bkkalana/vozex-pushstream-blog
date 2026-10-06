@@ -28,8 +28,8 @@ export async function V2SiteFooter(){
     {key:"instagram",url:chrome.socials.instagram,label:"Instagram",Icon:Instagram},
   ].filter(x=>x.url);
 
-  return <footer className="border-t border-[var(--ps-border)] bg-white text-[var(--ps-text)]">
-    <div className="ps-container-wide py-9 lg:py-10">
+  return <footer className="ps-site-footer w-full border-t border-[var(--ps-border)] bg-white text-[var(--ps-text)]">
+    <div className="ps-container-full py-9 lg:py-10">
       <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-[1.15fr_.75fr_.9fr_.7fr_1fr]">
         <div>
           <PublicBrand siteName={chrome.siteName} logoUrl={chrome.logoUrl}/>

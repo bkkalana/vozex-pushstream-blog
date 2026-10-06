@@ -96,6 +96,7 @@ export async function getHomePageV2Data() {
   } as const;
 
   const [
+    publishedPostCount,
     featuredCategories,
     allCategories,
     trendingPosts,
@@ -106,6 +107,9 @@ export async function getHomePageV2Data() {
     latestReviews,
     latestComparisons,
   ] = await Promise.all([
+    prisma.post.count({
+      where: { status: "PUBLISHED", deletedAt: null, publishedAt: { lte: now } },
+    }),
     prisma.category.findMany({
       where: { featured: true, archivedAt: null },
       include: { _count: { select: { posts: { where: { status: "PUBLISHED", deletedAt: null, publishedAt: { lte: now } } } } } },
@@ -194,9 +198,13 @@ export async function getHomePageV2Data() {
     return ids.map((id) => map.get(id)).filter((row): row is T => Boolean(row));
   };
 
+  const categoriesWithPosts = (featuredCategories.length ? featuredCategories : allCategories)
+    .filter((category) => category._count.posts > 0);
+  const manualCategoriesWithPosts = manualCategories.filter((category) => category._count.posts > 0);
+
   const categories = categoryIds.length
-    ? ordered(categoryIds, manualCategories)
-    : (featuredCategories.length ? featuredCategories : allCategories).slice(0, categoriesSection?.itemCount ?? 6);
+    ? ordered(categoryIds, manualCategoriesWithPosts)
+    : categoriesWithPosts.slice(0, categoriesSection?.itemCount ?? 6);
 
   const trending = trendingIds.length
     ? ordered(trendingIds, manualPosts).slice(0, trendingSection?.itemCount ?? 4)
@@ -218,6 +226,7 @@ export async function getHomePageV2Data() {
     sections,
     section: (key: string) => byKey.get(key),
     heroImage,
+    publishedPostCount,
     categories,
     trending,
     latest,
