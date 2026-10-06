@@ -1,4 +1,5 @@
 import { Fragment } from "react";
+import type { CSSProperties } from "react";
 import { Lightbulb, ShieldAlert, Sparkles } from "lucide-react";
 import { SharedContentBlock } from "@/components/site/shared-content-block";
 import { TechnicalCodeBlock } from "@/components/site/article/technical-code-block";
@@ -25,13 +26,13 @@ function renderNodes(nodes: N[], nextHeadingId: () => string | undefined): React
     const children = node.text ? marks(node, node.text) : renderNodes(node.content || [], nextHeadingId);
     switch (node.type) {
       case "text": return <Fragment key={index}>{children}</Fragment>;
-      case "paragraph": return <p key={index}>{children}</p>;
+      case "paragraph": return <p key={index} style={textAlignStyle(node)}>{children}</p>;
       case "heading": {
         const level = Number(node.attrs?.level || 2);
         const id = (level === 2 || level === 3 ? nextHeadingId() : undefined) || slugifyHeading(plainText(node));
-        if (level === 3) return <h3 id={id} key={index} className="scroll-mt-24">{children}</h3>;
-        if (level === 4) return <h4 id={id} key={index} className="scroll-mt-24">{children}</h4>;
-        return <h2 id={id} key={index} className="scroll-mt-24">{children}</h2>;
+        if (level === 3) return <h3 id={id} key={index} className="scroll-mt-24" style={textAlignStyle(node)}>{children}</h3>;
+        if (level === 4) return <h4 id={id} key={index} className="scroll-mt-24" style={textAlignStyle(node)}>{children}</h4>;
+        return <h2 id={id} key={index} className="scroll-mt-24" style={textAlignStyle(node)}>{children}</h2>;
       }
       case "bulletList": return <ul key={index}>{children}</ul>;
       case "orderedList": return <ol key={index}>{children}</ol>;
@@ -88,13 +89,26 @@ function marks(node: N, text: string) {
     if (mark.type === "bold") output = <strong>{output}</strong>;
     if (mark.type === "italic") output = <em>{output}</em>;
     if (mark.type === "underline") output = <u>{output}</u>;
+    if (mark.type === "strike") output = <s>{output}</s>;
     if (mark.type === "code") output = <code>{output}</code>;
+    if (mark.type === "highlight") output = <mark style={markStyle(mark, "backgroundColor")}>{output}</mark>;
+    if (mark.type === "textStyle") output = <span style={markStyle(mark, "color")}>{output}</span>;
     if (mark.type === "link") {
       const href = safeHref(String(mark.attrs?.href || ""));
       output = href ? <a href={href} rel="noopener noreferrer">{output}</a> : output;
     }
   }
   return output;
+}
+
+function textAlignStyle(node: N): CSSProperties | undefined {
+  const textAlign = String(node.attrs?.textAlign || "");
+  return ["left", "center", "right", "justify"].includes(textAlign) ? { textAlign: textAlign as CSSProperties["textAlign"] } : undefined;
+}
+
+function markStyle(mark: { attrs?: Record<string, unknown> }, property: "color" | "backgroundColor"): CSSProperties | undefined {
+  const value = property === "color" ? mark.attrs?.color : mark.attrs?.color;
+  return typeof value === "string" && /^#[0-9a-f]{3,8}$/i.test(value) ? { [property]: value } : undefined;
 }
 
 function safeHref(value: string) {
